@@ -62,45 +62,21 @@ Every comparison, catalogue, and price recommendation becomes another "breadcrum
 
 # Application Screenshots
 
-## Dashboard
+<p align="center">
+  <img src="Screenshots/dashboard.jpeg" width="220">
+  <img src="Screenshots/search.jpeg" width="220">
+  <img src="Screenshots/compare.jpeg" width="220">
+</p>
 
-![Dashboard](Screenshots/dashboard.jpeg)
+<p align="center">
+  <img src="Screenshots/smartbasket.jpeg" width="220">
+  <img src="Screenshots/lists.jpeg" width="220">
+  <img src="Screenshots/savings.jpeg" width="220">
+</p>
 
----
-
-## Search Products
-
-![Search](Screenshots/search.jpeg)
-
----
-
-## Compare Prices
-
-![Compare](Screenshots/compare.jpeg)
-
----
-
-## Smart Basket Optimizer
-
-![Smart Basket](Screenshots/smartbasket.jpeg)
-
----
-
-## Shopping Lists
-
-![Shopping Lists](Screenshots/lists.jpeg)
-
----
-
-## Savings
-
-![Savings](Screenshots/savings.jpeg)
-
----
-
-## Profile
-
-![Profile](Screenshots/profile.jpeg)
+<p align="center">
+  <img src="Screenshots/profile.jpeg" width="220">
+</p>
 
 # Technologies Used
 
