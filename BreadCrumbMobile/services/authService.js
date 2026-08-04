@@ -28,6 +28,8 @@ import {
 
 } from "./firebase";
 
+import api from "./api";
+
 export async function registerUser(userData) {
 
     try {
@@ -44,21 +46,21 @@ export async function registerUser(userData) {
 
         console.log("Email verification sent");
 
-        await setDoc(
-            doc(db, "users", userCredential.user.uid),
-            {
-                fullName: userData.fullName,
-                email: userData.email,
-                country: userData.country,
-                countryCode: userData.countryCode,
-                phoneNumber: userData.phoneNumber,
-                createdAt: new Date(),
-                provider: "Email",
-                favourites: [],
-                shoppingLists: [],
-                alerts: []
-            }
-        );
+        await api.post("/auth/sync", {
+
+            firebaseUID: userCredential.user.uid,
+
+            fullName: userData.fullName,
+
+            email: userData.email,
+
+            country: userData.country,
+
+            countryCode: userData.countryCode,
+
+            phoneNumber: userData.phoneNumber
+
+        });
 
         console.log("Firestore profile created");
 
@@ -76,7 +78,7 @@ export async function registerUser(userData) {
 
 export async function loginUser(email, password) {
 
-    return signInWithEmailAndPassword(
+    const userCredential = await signInWithEmailAndPassword(
 
         auth,
 
@@ -85,6 +87,32 @@ export async function loginUser(email, password) {
         password
 
     );
+
+    const firebaseUser = userCredential.user;
+
+    const response = await api.post("/auth/sync", {
+
+        firebaseUID: firebaseUser.uid,
+
+        fullName: firebaseUser.displayName || "",
+
+        email: firebaseUser.email,
+
+        country: "",
+
+        countryCode: "",
+
+        phoneNumber: firebaseUser.phoneNumber || ""
+
+    });
+
+    return {
+
+        firebaseUser,
+
+        mongoUser: response.data.user
+
+    };
 
 }
 

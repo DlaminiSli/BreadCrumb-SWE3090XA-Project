@@ -118,8 +118,7 @@ export default StyleSheet.create({
 
     bestStoreCard: {
         borderWidth: 2,
-        borderColor: "#DCEB73",
-        backgroundColor: "#FCFFF0"
+        borderColor: "#DCEB73"
     },
 
     storeName: {

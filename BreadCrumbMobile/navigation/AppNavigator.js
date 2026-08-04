@@ -28,6 +28,9 @@ import AboutScreen from "../screens/AboutScreen";
 import EditProfileScreen from "../screens/EditProfileScreen";
 import AppearanceScreen from "../screens/AppearanceScreen";
 import TextSizeScreen from "../screens/TextSizeScreen";
+import CatalogueViewer from "../screens/CatalogueViewer";
+import ComboDetails from "../screens/ComboDetails";
+import Notifications from "../screens/Notifications";
 
 const Stack = createNativeStackNavigator();
 
@@ -170,6 +173,21 @@ export default function AppNavigator() {
                 <Stack.Screen
                     name="TextSize"
                     component={TextSizeScreen}
+                />
+
+                <Stack.Screen
+                    name="CatalogueViewer"
+                    component={CatalogueViewer}
+                />
+
+                <Stack.Screen
+                    name="ComboDetails"
+                    component={ComboDetails}
+                />
+
+                <Stack.Screen
+                    name="Notifications"
+                    component={Notifications}
                 />
 
             </Stack.Navigator>

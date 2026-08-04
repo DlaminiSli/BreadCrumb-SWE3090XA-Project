@@ -20,17 +20,11 @@ export default function PrimaryButton({
             onPress={onPress}
             style={{
                 backgroundColor: Colors.primary,
-
                 width: "100%",
-
                 height: 55,
-
                 borderRadius: 30,
-
                 justifyContent: "center",
-
                 alignItems: "center",
-
                 marginTop: 20
             }}
         >
@@ -38,19 +32,13 @@ export default function PrimaryButton({
             <Text
                 style={{
                     color: Colors.secondary,
-
                     fontSize: 18,
-
                     fontWeight: "bold"
                 }}
             >
-
                 {title}
-
             </Text>
 
         </TouchableOpacity>
-
     );
-
 }

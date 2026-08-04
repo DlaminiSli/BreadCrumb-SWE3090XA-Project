@@ -13,6 +13,7 @@ import {
 } from "react-native";
 
 import styles from "../styles/CategoryCardStyles";
+import { useTheme } from "../context/ThemeContext";
 
 export default function CategoryCard({
 
@@ -23,6 +24,7 @@ export default function CategoryCard({
     onPress
 
 }) {
+    const { colors, getFontSize } = useTheme();
 
     return (
 
@@ -49,19 +51,17 @@ export default function CategoryCard({
             </View>
 
             <Text
-
                 numberOfLines={1}
-
-                style={styles.title}
-
+                style={[
+            styles.title,
+            {
+                color: colors.text,
+                fontSize: getFontSize(13)
+            }
+        ]}
             >
-
                 {title}
-
             </Text>
-
         </TouchableOpacity>
-
     );
-
 }

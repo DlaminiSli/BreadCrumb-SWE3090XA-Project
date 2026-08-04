@@ -1,16 +1,6 @@
 import React from "react";
 
-import {
-
-    View,
-
-    Text,
-
-    TouchableOpacity,
-
-    Alert
-
-} from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 
 import Swipeable from "react-native-gesture-handler/Swipeable";
 
@@ -18,406 +8,260 @@ import { Ionicons } from "@expo/vector-icons";
 
 import styles from "../styles/ShoppingListsStyles";
 
+import { useTheme } from "../context/ThemeContext";
+
 export default function ShoppingListCard({
+  list,
 
-    list,
+  archived,
 
-    archived,
+  navigation,
 
-    navigation,
+  onArchive,
 
-    onArchive,
+  onDelete,
 
-    onDelete,
-
-    onReuse
-
+  onReuse,
 }) {
+  const { colors, getFontSize } = useTheme();
 
-    const leftAction = () => (
-
-        <TouchableOpacity
-
-            onPress={() => {
-
-                if (archived) {
-
-                    onReuse();
-
-                } else {
-
-                    onArchive();
-
-                }
-
-            }}
-
-            style={{
-
-                width:120,
-
-                backgroundColor:"#22A45D",
-
-                justifyContent:"center",
-
-                alignItems:"center",
-
-                borderRadius:22,
-
-                marginBottom:18
-
-            }}
-
-        >
-
-            <Ionicons
-
-                name={
-
-                    archived
-
-                        ? "refresh"
-
-                        : "archive"
-
-                }
-
-                size={32}
-
-                color="#FFF"
-
-            />
-
-            <Text
-
-                style={{
-
-                    color:"#FFF",
-
-                    fontWeight:"700",
-
-                    marginTop:8
-
-                }}
-
-            >
-
-                {
-
-                    archived
-
-                        ? "Reuse"
-
-                        : "Archive"
-
-                }
-
-            </Text>
-
-        </TouchableOpacity>
-
-    );
-
-    const rightAction = () => (
-
-        <TouchableOpacity
-
-            onPress={() => {
-
-                Alert.alert(
-
-                    archived
-
-                        ? "Delete Forever?"
-
-                        : "Delete Shopping List",
-
-                    archived
-
-                        ? "This archived list will be permanently deleted."
-
-                        : "Are you sure you want to delete this shopping list?",
-
-                    [
-
-                        {
-
-                            text:"Cancel",
-
-                            style:"cancel"
-
-                        },
-
-                        {
-
-                            text:"Delete",
-
-                            style:"destructive",
-
-                            onPress:onDelete
-
-                        }
-
-                    ]
-
-                );
-
-            }}
-
-            style={{
-
-                width:120,
-
-                backgroundColor:"#D32F2F",
-
-                justifyContent:"center",
-
-                alignItems:"center",
-
-                borderRadius:22,
-
-                marginBottom:18
-
-            }}
-
-        >
-
-            <Ionicons
-
-                name="trash"
-
-                size={32}
-
-                color="#FFF"
-
-            />
-
-            <Text
-
-                style={{
-
-                    color:"#FFF",
-
-                    fontWeight:"700",
-
-                    marginTop:8
-
-                }}
-
-            >
-
-                Delete
-
-            </Text>
-
-        </TouchableOpacity>
-
-    );
-
-    return (
-
-        <Swipeable
-
-            renderLeftActions={leftAction}
-
-            renderRightActions={rightAction}
-
-        >
-            <View
-
-    style={[
-        styles.listCard,
-        archived && {
-            opacity:0.75
-        }
-    ]}
-
->
-
+  const leftAction = () => (
     <TouchableOpacity
-
-        activeOpacity={0.9}
-
-        onPress={() =>
-
-            navigation.navigate(
-
-                "ShoppingListDetails",
-
-                {
-
-                    listId:list.id
-
-                }
-
-            )
-
+      onPress={() => {
+        if (archived) {
+          onReuse();
+        } else {
+          onArchive();
         }
-
+      }}
+      style={{
+        width: 120,
+        backgroundColor: "#22A45D",
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 22,
+        marginBottom: 18,
+      }}
     >
+      <Ionicons
+        name={archived ? "refresh" : "archive"}
+        size={32}
+        color="#FFF"
+      />
 
-        <View style={styles.listTop}>
+      <Text
+        style={{
+          color: "#FFF",
+          fontWeight: "700",
+          marginTop: 8,
+        }}
+      >
+        {archived ? "Reuse" : "Archive"}
+      </Text>
+    </TouchableOpacity>
+  );
 
-            <View>
+  const rightAction = () => (
+    <TouchableOpacity
+      onPress={() => {
+        Alert.alert(
+          archived ? "Delete Forever?" : "Delete Shopping List",
 
-                <Text style={styles.listName}>
+          archived
+            ? "This archived list will be permanently deleted."
+            : "Are you sure you want to delete this shopping list?",
 
-                    {list.name}
+          [
+            {
+              text: "Cancel",
 
-                </Text>
-
-                <Text style={styles.listDate}>
-
-                    {list.shoppingDate || "No Date"}
-
-                </Text>
-
-            </View>
+              style: "cancel",
+            },
 
             {
-
-                archived ?
-
-                (
-
-                    <Ionicons
-
-                        name="archive"
-
-                        size={24}
-
-                        color="#666"
-
-                    />
-
-                )
-
-                :
-
-                (
-
-                    list.shareList &&
-
-                    <Ionicons
-
-                        name="people"
-
-                        size={24}
-
-                        color="#C7D72D"
-
-                    />
-
-                )
-
-            }
-
-        </View>
-
-        <View style={styles.infoRow}>
-
-            <View>
-
-                <Text style={styles.infoTitle}>
-
-                    Budget
-
-                </Text>
-
-                <Text style={styles.infoValue}>
-
-                    E{list.budget}
-
-                </Text>
-
-            </View>
-
-            <View>
-
-                <Text style={styles.infoTitle}>
-
-                    Items
-
-                </Text>
-
-                <Text style={styles.infoValue}>
-
-                    {list.items.length}
-
-                </Text>
-
-            </View>
-
-            <View>
-
-                <Text style={styles.infoTitle}>
-
-                    {
-
-                        archived
-
-                            ? "Status"
-
-                            : "Remaining"
-
-                    }
-
-                </Text>
-
-                <Text
-
-                    style={
-
-                        archived
-
-                            ?
-
-                            {
-
-                                color:"#22A45D",
-
-                                fontWeight:"700",
-
-                                marginTop:5,
-
-                                fontSize:16
-
-                            }
-
-                            :
-
-                            styles.remaining
-
-                    }
-
-                >
-
-                    {
-
-                        archived
-
-                            ?
-
-                            "Completed"
-
-                            :
-
-                            `E${list.budget}`
-
-                    }
-
-                </Text>
-
-            </View>
-
-        </View>
-
+              text: "Delete",
+
+              style: "destructive",
+
+              onPress: onDelete,
+            },
+          ],
+        );
+      }}
+      style={{
+        width: 120,
+        backgroundColor: "#D32F2F",
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 22,
+        marginBottom: 18,
+      }}
+    >
+      <Ionicons name="trash" size={32} color="#FFF" />
+
+      <Text
+        style={{
+          color: "#FFF",
+          fontWeight: "700",
+          marginTop: 8,
+        }}
+      >
+        Delete
+      </Text>
     </TouchableOpacity>
+  );
 
-</View>
+  return (
+    <Swipeable renderLeftActions={leftAction} renderRightActions={rightAction}>
+      <View
+        style={[
+          styles.listCard,
+          {
+            backgroundColor: colors.card,
+          },
+          archived && {
+            opacity: 0.75,
+          },
+        ]}
+      >
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={() =>
+            navigation.navigate(
+              "ShoppingListDetails",
 
-</Swipeable>
+              {
+                listId: list._id || list.id,
+              },
+            )
+          }
+        >
+          <View style={styles.listTop}>
+            <View>
+              <Text
+                style={[
+                  styles.listName,
+                  {
+                    color: colors.text,
+                    fontSize: getFontSize(20),
+                  },
+                ]}
+              >
+                {list.name}
+              </Text>
 
-);
+              <Text
+                style={[
+                  styles.listDate,
+                  {
+                    color: colors.secondary,
+                    fontSize: getFontSize(13),
+                  },
+                ]}
+              >
+                {list.shoppingDate || "No Date"}
+              </Text>
+            </View>
 
+            {archived ? (
+              <Ionicons name="archive" size={24} color={colors.secondary} />
+            ) : (
+              list.shareList && (
+                <Ionicons name="people" size={24} color="#C7D72D" />
+              )
+            )}
+          </View>
+
+          <View style={styles.infoRow}>
+            <View>
+              <Text
+                style={[
+                  styles.infoTitle,
+                  {
+                    color: colors.secondary,
+                    fontSize: getFontSize(12),
+                  },
+                ]}
+              >
+                Budget
+              </Text>
+
+              <Text
+                style={[
+                  styles.infoValue,
+                  {
+                    color: colors.text,
+                    fontSize: getFontSize(18),
+                  },
+                ]}
+              >
+                E{list.budget}
+              </Text>
+            </View>
+
+            <View>
+              <Text
+                style={[
+                  styles.infoTitle,
+                  {
+                    color: colors.secondary,
+                    fontSize: getFontSize(12),
+                  },
+                ]}
+              >
+                Items
+              </Text>
+
+              <Text
+                style={[
+                  styles.infoValue,
+                  {
+                    color: colors.text,
+                    fontSize: getFontSize(18),
+                  },
+                ]}
+              >
+                {list.items?.length || 0}
+              </Text>
+            </View>
+
+            <View>
+              <Text
+                style={[
+                  styles.infoTitle,
+                  {
+                    color: colors.secondary,
+                    fontSize: getFontSize(12),
+                  },
+                ]}
+              >
+                {archived ? "Status" : "Remaining"}
+              </Text>
+
+              <Text
+                style={
+                  archived
+                    ? {
+                        color: "#22A45D",
+                        fontWeight: "700",
+                        marginTop: 5,
+                        fontSize: getFontSize(16),
+                      }
+                    : [
+                        styles.remaining,
+                        {
+                          color: "#22A45D",
+                          fontSize: getFontSize(18),
+                        },
+                      ]
+                }
+              >
+                {archived ? "Completed" : `E${list.budget}`}
+              </Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </View>
+    </Swipeable>
+  );
 }

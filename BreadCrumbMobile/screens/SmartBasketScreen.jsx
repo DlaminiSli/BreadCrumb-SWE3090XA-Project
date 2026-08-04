@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
     SafeAreaView,
     View,
@@ -9,73 +9,146 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useShopping } from "../context/ShoppingContext";
 import { categorySuggestions } from "../helpers/categorySuggestions";
-import { compareBasket } from "../helpers/compareBasket";
+import axios from "axios";
+import { useTheme } from "../context/ThemeContext";
 
 export default function SmartBasketScreen({ route, navigation }) {
     const { listId } = route.params;
     const { lists, applySmartBasket } = useShopping();
-
     const [step, setStep] = useState(1);
-
-    const list = lists.find(item => item.id === listId);
-
+    const [selectedStrategy, setSelectedStrategy] = useState("singleStore");
+    const [comparison, setComparison] = useState(null);
+    const [loadingComparison, setLoadingComparison] = useState(false);
+    const [estimatedTotal, setEstimatedTotal] = useState(0);
+    const { colors, getFontSize } = useTheme();
+    const oneStore = comparison?.oneStore;
+    const maximumSavings = comparison?.maximumSavings;
+    const recommended = comparison?.recommended;
+    const list = lists.find(
+        item =>
+            String(item._id || item.id) ===
+            String(listId)
+    );
     const category = useMemo(() => {
-        if (!list || !list.name) return "groceries";
-        const name = list.name.toLowerCase();
-        if (name.includes("toile")) return "toiletries";
-        if (name.includes("grocer")) return "groceries";
-        if (name.includes("braai")) return "braai";
-        if (name.includes("clean")) return "cleaning";
-        return "groceries";
+        if (!list) return "groceries";
+        return (list.category || "groceries").toLowerCase();
     }, [list]);
 
-    const [products, setProducts] = useState(() => {
-        const suggestions = categorySuggestions[category] || [];
-        return suggestions.map(product => ({
+    const suggestions = categorySuggestions[category];
+    const [products, setProducts] = useState(() =>
+        (suggestions || []).map(product => ({
             ...product,
             selected: true
-        }));
-    });
+        }))
+    );
 
-    const estimatedTotal = products
-        .filter(item => item.selected)
-        .reduce((sum, item) => sum + item.estimatedPrice, 0);
+    useEffect(() => {
+
+    setProducts(
+        (suggestions || []).map(product => ({
+            ...product,
+            selected: true
+        }))
+
+    );
+
+}, [suggestions]);
+
+    useEffect(() => {
+
+        loadEstimate();
+
+    }, [products]);
 
         const selectedProducts = products.filter(
             item => item.selected
         );
 
-        const comparison = compareBasket(
-            selectedProducts
-        );
-
-        const {
-
-            oneStore,
-
-            maximumSavings,
-
-            recommended
-
-        } = comparison;
-
         const selectedCount = selectedProducts.length;
 
-    const toggleProduct = id => {
-        setProducts(current =>
-            current.map(item =>
-                item.id === id
-                    ? { ...item, selected: !item.selected }
-                    : item
-            )
-        );
-    };
+        const loadComparison = async () => {
+
+            try {
+
+                setLoadingComparison(true);
+
+                const response = await axios.post(
+
+                    "http://10.0.50.118:5000/api/prices/compare-basket",
+
+                    {
+                        products: selectedProducts,
+                        budget: list.budget
+                    }
+
+                );
+
+                setComparison(response.data);
+
+            }
+
+            catch (error) {
+
+                console.log(error);
+
+            }
+
+            finally {
+
+                setLoadingComparison(false);
+
+            }
+
+        };
+
+        const loadEstimate = async () => {
+
+            try {
+
+                const response = await axios.post(
+
+                    "http://10.0.50.118:5000/api/prices/estimate-basket",
+
+                    {
+                        products: products.filter(item => item.selected)
+                    }
+
+                );
+
+                setEstimatedTotal(response.data.estimatedTotal);
+
+            }
+
+            catch (error) {
+
+                console.log(error);
+
+            }
+
+        };
+
+        const toggleProduct = id => {
+            setProducts(current =>
+                current.map(item =>
+                    item.id === id
+                        ? { ...item, selected: !item.selected }
+                        : item
+                )
+            );
+        };
 
 
     if (!list) {
         return (
             <SafeAreaView style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                <Text>List not found.</Text>
+                <Text
+                    style={{
+                        color: colors.text,
+                        fontSize: getFontSize(18)
+                    }}
+                >
+                    List not found.
+                </Text>
             </SafeAreaView>
         );
     }
@@ -84,7 +157,7 @@ export default function SmartBasketScreen({ route, navigation }) {
         <SafeAreaView
             style={{
                 flex: 1,
-                backgroundColor: "#F6F7FB"
+                backgroundColor: colors.background
             }}
         >
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -101,7 +174,7 @@ export default function SmartBasketScreen({ route, navigation }) {
                             <Ionicons
                                 name="arrow-back"
                                 size={26}
-                                color="#222"
+                                color={colors.text}
                             />
                         </TouchableOpacity>
 
@@ -109,7 +182,7 @@ export default function SmartBasketScreen({ route, navigation }) {
                             style={{
                                 marginHorizontal: 20,
                                 marginTop: 20,
-                                backgroundColor: "#FFFFFF",
+                                backgroundColor: colors.card,
                                 borderRadius: 25,
                                 padding: 25,
                                 elevation: 3
@@ -119,7 +192,7 @@ export default function SmartBasketScreen({ route, navigation }) {
                                 style={{
                                     fontSize: 26,
                                     fontWeight: "700",
-                                    color: "#222"
+                                    color: colors.text
                                 }}
                             >
                                 ✨ Smart Basket Optimizer
@@ -127,7 +200,7 @@ export default function SmartBasketScreen({ route, navigation }) {
                             <Text
                                 style={{
                                     marginTop: 12,
-                                    color: "#666",
+                                    color: colors.secondary,
                                     lineHeight: 22
                                 }}
                             >
@@ -146,33 +219,38 @@ export default function SmartBasketScreen({ route, navigation }) {
                             <View
                                 style={{
                                     flex: 1,
-                                    backgroundColor: "#FFFFFF",
+                                    backgroundColor: colors.card,
                                     borderRadius: 20,
                                     padding: 20,
                                     marginRight: 10
                                 }}
                             >
-                                <Text style={{ color: "#888" }}>Category</Text>
                                 <Text
                                     style={{
-                                        fontWeight: "700",
-                                        fontSize: 18,
-                                        marginTop: 8
+                                        color: colors.secondary
+                                    }}
+                                >Category</Text>
+                                <Text
+                                    style={{
+                                        fontWeight:"700",
+                                        fontSize:getFontSize(18),
+                                        marginTop:8,
+                                        color: colors.text
                                     }}
                                 >
-                                    {list.name}
+                                    {list.category}
                                 </Text>
                             </View>
 
                             <View
                                 style={{
                                     flex: 1,
-                                    backgroundColor: "#FFFFFF",
+                                    backgroundColor: colors.card,
                                     borderRadius: 20,
                                     padding: 20
                                 }}
                             >
-                                <Text style={{ color: "#888" }}>Budget</Text>
+                                <Text style={{ color: colors.secondary }}>Budget</Text>
                                 <Text
                                     style={{
                                         fontWeight: "700",
@@ -191,22 +269,23 @@ export default function SmartBasketScreen({ route, navigation }) {
                             style={{
                                 marginHorizontal: 20,
                                 marginTop: 25,
-                                backgroundColor: "#FFFFFF",
+                                backgroundColor: colors.card,
                                 borderRadius: 25,
                                 padding: 20
                             }}
                         >
                             <Text
                                 style={{
-                                    fontSize: 20,
-                                    fontWeight: "700"
+                                    fontSize:getFontSize(20),
+                                    fontWeight:"700",
+                                    color: colors.text
                                 }}
                             >
                                 Suggested Products
                             </Text>
                             <Text
                                 style={{
-                                    color: "#777",
+                                    color: colors.secondary,
                                     marginTop: 8,
                                     marginBottom: 20
                                 }}
@@ -216,14 +295,14 @@ export default function SmartBasketScreen({ route, navigation }) {
 
                             {products.map(item => (
                                 <TouchableOpacity
-                                    key={item.id}
+                                    key={item._id || item.id}
                                     onPress={() => toggleProduct(item.id)}
                                     style={{
                                         flexDirection: "row",
                                         alignItems: "center",
                                         paddingVertical: 15,
                                         borderBottomWidth: 1,
-                                        borderBottomColor: "#EFEFEF"
+                                        borderBottomColor: colors.border
                                     }}
                                 >
                                     <Ionicons
@@ -233,9 +312,10 @@ export default function SmartBasketScreen({ route, navigation }) {
                                     />
                                     <Text
                                         style={{
-                                            marginLeft: 15,
-                                            flex: 1,
-                                            fontSize: 16
+                                            marginLeft:15,
+                                            flex:1,
+                                            fontSize:getFontSize(16),
+                                            color: colors.text
                                         }}
                                     >
                                         {item.name}
@@ -256,13 +336,13 @@ export default function SmartBasketScreen({ route, navigation }) {
                             style={{
                                 marginHorizontal: 20,
                                 marginTop: 20,
-                                backgroundColor: "#FFFFFF",
+                                backgroundColor: colors.card,
                                 borderRadius: 20,
                                 padding: 20
                             }}
                         >
-                            <Text style={{ color: "#777" }}>
-                                Estimated Basket Total
+                            <Text style={{ color: colors.secondary }}>
+                                Today's Lowest Basket Cost
                             </Text>
                             <Text
                                 style={{
@@ -277,7 +357,10 @@ export default function SmartBasketScreen({ route, navigation }) {
                         </View>
 
                         <TouchableOpacity
-                            onPress={() => setStep(2)}
+                            onPress={async () => {
+                                await loadComparison();
+                                setStep(2);
+                            }}
                             style={{
                                 marginHorizontal: 20,
                                 marginTop: 30,
@@ -301,7 +384,7 @@ export default function SmartBasketScreen({ route, navigation }) {
                     </>
                 )}
 
-                {step === 2 && (
+                {step === 2 && comparison && (
                     <>
                         <TouchableOpacity
                             onPress={() => setStep(1)}
@@ -313,7 +396,7 @@ export default function SmartBasketScreen({ route, navigation }) {
                             <Ionicons
                                 name="arrow-back"
                                 size={26}
-                                color="#222"
+                                color={colors.text}
                             />
                         </TouchableOpacity>
 
@@ -327,7 +410,7 @@ export default function SmartBasketScreen({ route, navigation }) {
                                 style={{
                                     fontSize: 28,
                                     fontWeight: "700",
-                                    color: "#222"
+                                    color: colors.text
                                 }}
                             >
                                 Compare Shopping Strategies
@@ -335,7 +418,7 @@ export default function SmartBasketScreen({ route, navigation }) {
 
                             <Text
                                 style={{
-                                    color: "#777",
+                                    color: colors.secondary,
                                     marginTop: 8,
                                     lineHeight: 22
                                 }}
@@ -344,28 +427,24 @@ export default function SmartBasketScreen({ route, navigation }) {
                             </Text>
                         </View>
 
-                        {/* Maximum Savings Card */}
+                        {/* Maximum Savings */}
                         <TouchableOpacity
                             activeOpacity={0.9}
+                            onPress={() => setSelectedStrategy("maximum")}
                             style={{
                                 marginHorizontal: 20,
                                 marginTop: 25,
-                                backgroundColor: "#FFFFFF",
+                                backgroundColor: colors.card,
                                 borderRadius: 22,
                                 padding: 22,
-                                borderWidth: 2,
-                                borderColor: "#22A45D",
-                                elevation: 2
+                                borderWidth:
+                                    selectedStrategy === "maximum" ? 2 : 1,
+                                borderColor:
+                                    selectedStrategy === "maximum"
+                                        ? "#22A45D"
+                                        : "#E5E5E5"
                             }}
-                            onPress={() => {
-                                applySmartBasket(
-                                    list.id,
-                                    products.filter(item => item.selected),
-                                    "maximum"
-                                );
-                                navigation.goBack();
-                            }}
-                            >
+                        >
                             <Text
                                 style={{
                                     fontSize: 22,
@@ -373,159 +452,399 @@ export default function SmartBasketScreen({ route, navigation }) {
                                     color: "#22A45D"
                                 }}
                             >
-                                💰 Maximum Savings
+                                Maximum Savings
                             </Text>
 
-                            <Text style={{ marginTop: 15, color: "#666", lineHeight: 20 }}>
-                                We found the cheapest supermarket for every selected product.
-                                This option helps you maximise your savings, although you may need to visit multiple stores.
+                            <Text
+                                style={{
+                                    marginTop: 12,
+                                    color: colors.secondary,
+                                    lineHeight: 22
+                                }}
+                            >
+                                Buy each product from the cheapest store.
                             </Text>
 
-                            <View style={{ marginTop: 20 }}>
+                            {(maximumSavings?.groupedStores ?? []).map(store => (
 
-                                {
+                                <View
+                                    key={store.store}
+                                    style={{
+                                        marginTop:20,
+                                        backgroundColor:colors.background,
+                                        borderRadius:16,
+                                        padding:15
+                                    }}
+                                >
 
-                                    maximumSavings.groupedStores.map(store => (
+                                    <Text
+                                        style={{
+                                            fontWeight:"700",
+                                            color:"#22A45D",
+                                            fontSize:17
+                                        }}
+                                    >
+                                        {store.store}
+                                    </Text>
+
+                                    {store.items.map(item => (
 
                                         <View
-
-                                            key={store.store}
-
+                                            key={item.product}
                                             style={{
-
-                                                marginBottom:15,
-
-                                                backgroundColor:"#F9F9F9",
-
-                                                borderRadius:16,
-
-                                                padding:15
-
+                                                flexDirection:"row",
+                                                justifyContent:"space-between",
+                                                marginTop:8
                                             }}
-
                                         >
 
                                             <Text
-
                                                 style={{
-
-                                                    fontWeight:"700",
-
-                                                    fontSize:17,
-
-                                                    color:"#22A45D"
-
+                                                    color: colors.text,
+                                                    fontSize: getFontSize(16)
                                                 }}
-
                                             >
-
-                                                🏪 {store.store}
-
+                                                • {item.product}
                                             </Text>
 
-                                            {
-
-                                                store.items.map(item => (
-
-                                                    <View
-
-                                                        key={item.id}
-
-                                                        style={{
-
-                                                            flexDirection:"row",
-
-                                                            justifyContent:"space-between",
-
-                                                            marginTop:8
-
-                                                        }}
-
-                                                    >
-
-                                                        <Text>
-
-                                                            • {item.name}
-
-                                                        </Text>
-
-                                                        <Text>
-
-                                                            E{item.price}
-
-                                                        </Text>
-
-                                                    </View>
-
-                                                ))
-
-                                            }
+                                            <Text
+                                                style={{
+                                                    color: colors.text,
+                                                    fontSize: getFontSize(16)
+                                                }}
+                                            >
+                                                E{item.price}
+                                            </Text>
 
                                         </View>
 
-                                    ))
+                                    ))}
 
-                                }
+                                </View>
+
+                            ))}
+
+                            <View
+                                style={{
+                                    flexDirection:"row",
+                                    justifyContent:"space-between",
+                                    marginTop:20,
+                                    borderTopWidth:1,
+                                    borderTopColor:"#EEE",
+                                    paddingTop:15
+                                }}
+                            >
+
+                                <View>
+
+                                    <Text
+                                        style={{
+                                            color: colors.secondary
+                                        }}
+                                    >
+                                        Estimated Total
+                                    </Text>
+
+                                    <Text
+                                        style={{
+                                            fontSize:getFontSize(20),
+                                            fontWeight:"700",
+                                            color: colors.text
+                                        }}
+                                    >
+                                        E{maximumSavings?.total ?? 0}
+                                    </Text>
+
+                                </View>
+
+                                <View
+                                    style={{
+                                        alignItems:"flex-end"
+                                    }}
+                                >
+
+                                    <Text
+                                        style={{
+                                            color: colors.secondary
+                                        }}
+                                    >
+                                        Budget Remaining
+                                    </Text>
+
+                                    <Text
+                                        style={{
+                                            fontSize:getFontSize(20),
+                                            fontWeight:"700",
+                                            color: colors.text
+                                        }}
+                                    >
+                                        E{maximumSavings?.budgetRemaining ?? 0}
+                                    </Text>
+
+                                </View>
+
+                            </View>
+
+                        </TouchableOpacity>
+
+                        {/* Best One-Store Basket */}
+
+                        <TouchableOpacity
+                            activeOpacity={0.9}
+                            onPress={() => setSelectedStrategy("singleStore")}
+                            style={{
+                                marginHorizontal:20,
+                                marginTop:20,
+                                backgroundColor: colors.card,
+                                borderRadius:22,
+                                padding:22,
+                                borderWidth:selectedStrategy==="singleStore" ? 2 : 1,
+                                borderColor:selectedStrategy==="singleStore"
+                                    ? "#22A45D"
+                                    : "#E5E5E5"
+                            }}
+                        >
+
+                            <Text
+                                style={{
+                                    fontSize:22,
+                                    fontWeight:"700",
+                                    color:"#22A45D"
+                                }}
+                            >
+                                Best One-Store Basket
+                            </Text>
+
+                            <Text
+                                style={{
+                                    marginTop:10,
+                                    color: colors.secondary,
+                                    lineHeight:22
+                                }}
+                            >
+                                Buy everything from one supermarket.
+                            </Text>
+
+                            <View
+                                style={{
+                                    marginTop:20,
+                                    backgroundColor:colors.background,
+                                    borderRadius:18,
+                                    padding:16
+                                }}
+                            >
+
+                                <Text
+                                    style={{
+                                        color: colors.secondary
+                                    }}
+                                >
+                                    Selected Store
+                                </Text>
+
+                                <Text
+                                    style={{
+                                        fontSize:24,
+                                        fontWeight:"700",
+                                        color:"#22A45D",
+                                        marginTop:5
+                                    }}
+                                >
+                                    {oneStore?.selectedStore ?? "Not Available"}
+                                </Text>
 
                             </View>
 
                             <View
                                 style={{
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    marginTop: 10,
-                                    borderTopWidth: 1,
-                                    borderTopColor: "#EEE",
-                                    paddingTop: 15
+                                    flexDirection:"row",
+                                    justifyContent:"space-between",
+                                    marginTop:20,
+                                    borderTopWidth:1,
+                                    borderTopColor:"#EEE",
+                                    paddingTop:15
                                 }}
                             >
+
                                 <View>
-                                    <Text style={{ color: "#777" }}>Est. Total</Text>
-                                    <Text style={{ fontWeight: "700", fontSize: 18 }}>
-                                        E{maximumSavings.total}
+
+                                    <Text
+                                        style={{
+                                            color: colors.secondary
+                                        }}
+                                    >
+                                        Total
                                     </Text>
-                                </View>
-                                <View style={{ alignItems: "flex-end" }}>
-                                    <Text style={{ color: "#777" }}>You Save</Text>
-                                    <Text style={{ fontWeight: "700", fontSize: 18, color: "#22A45D" }}>
-                                        E{maximumSavings.savings}
+
+                                    <Text
+                                        style={{
+                                            fontSize:getFontSize(20),
+                                            fontWeight:"700",
+                                            color: colors.text
+                                        }}
+                                    >
+                                        E{oneStore?.total ?? 0}
                                     </Text>
+
                                 </View>
+
+                                <View
+                                    style={{
+                                        alignItems:"flex-end"
+                                    }}
+                                >
+
+                                    <Text
+                                        style={{
+                                            color: colors.secondary
+                                        }}
+                                    >
+                                        Budget Remaining
+                                    </Text>
+
+                                    <Text
+                                        style={{
+                                            fontSize:getFontSize(20),
+                                            fontWeight:"700",
+                                            color: colors.text
+                                        }}
+                                    >
+                                        E{oneStore?.budgetRemaining ?? 0}
+                                    </Text>
+
+                                </View>
+
                             </View>
+
+                        <Text
+                            style={{
+                                marginTop: 20,
+                                marginBottom: 10,
+                                fontSize: 18,
+                                fontWeight: "700",
+                                color: colors.text
+                            }}
+                        >
+                            Other Store Totals
+                        </Text>
+
+                        {oneStore?.rankings?.map((store, index) => (
+
+                            <View
+                                key={store.store}
+                                style={{
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    paddingVertical: 6,
+                                    borderBottomWidth: 1,
+                                    borderBottomColor: "#E5E5E5"
+                                }}
+                            >
+
+                                <Text
+                                    style={{
+                                        color: colors.text,
+                                        fontSize: getFontSize(16)
+                                    }}
+                                >
+                                    {index + 1}. {store.store}
+                                </Text>
+
+                                <Text
+                                    style={{
+                                        color: colors.text,
+                                        fontSize: getFontSize(16)
+                                    }}
+                                >
+                                    E{store.total}
+                                </Text>
+
+                            </View>
+
+                        ))}
+
                         </TouchableOpacity>
 
-                        {/* Best One-Store Basket */}
-                        <TouchableOpacity
+                        {/* BreadCrumb Recommendation */}
 
-                            activeOpacity={0.9}
-
+                        <View
                             style={{
-
                                 marginHorizontal:20,
-
                                 marginTop:20,
-
-                                marginBottom:30,
-
-                                backgroundColor:"#FFFFFF",
-
+                                marginBottom:20,
+                                backgroundColor:colors.card,
                                 borderRadius:22,
-
-                                padding:22,
-
-                                elevation:2
-
+                                padding:20,
+                                borderLeftWidth:6,
+                                borderLeftColor:"#F4B400"
                             }}
+                        >
+
+                            <View
+                                style={{
+                                    flexDirection:"row",
+                                    alignItems:"center"
+                                }}
+                            >
+
+                                <Ionicons
+                                    name="sparkles"
+                                    size={20}
+                                    color="#F4B400"
+                                />
+
+                                <Text
+                                    style={{
+                                        marginLeft:10,
+                                        fontSize:19,
+                                        fontWeight:"700",
+                                        color: colors.text
+                                    }}
+                                >
+                                    BreadCrumb Recommendation
+                                </Text>
+
+                            </View>
+
+                            <Text
+                                style={{
+                                    marginTop:18,
+                                    color:colors.secondary,
+                                    lineHeight:24,
+                                    fontSize:15
+                                }}
+                            >
+
+                                {
+                                    oneStore
+                                        ? (
+                                            oneStore.budgetRemaining >= (maximumSavings?.budgetRemaining ?? 0)
+
+                                                ? `We recommend the Best One-Store Basket. You'll spend E${oneStore.total} at ${oneStore.selectedStore} and still have E${oneStore.budgetRemaining} remaining from your budget.`
+
+                                                : `We recommend the Maximum Savings strategy. You'll spend E${maximumSavings?.total ?? 0} and still have E${maximumSavings?.budgetRemaining ?? 0} remaining from your budget.`
+                                        )
+
+                                        : `No single supermarket currently stocks every selected product. We recommend the Maximum Savings strategy instead.`
+                                }
+
+                            </Text>
+
+                        </View>
+
+                        {/* Apply Button */}
+
+                        <TouchableOpacity
 
                             onPress={() => {
 
                                 applySmartBasket(
 
-                                    list.id,
+                                    list._id,
 
                                     selectedProducts,
 
-                                    "singleStore"
+                                    selectedStrategy
 
                                 );
 
@@ -533,409 +852,46 @@ export default function SmartBasketScreen({ route, navigation }) {
 
                             }}
 
-                        >
-                        <Text
-
                             style={{
 
-                                fontSize:22,
+                                marginHorizontal:20,
 
-                                fontWeight:"700",
+                                marginBottom:40,
 
-                                color:"#1565C0"
-
-                            }}
-
-                            >
-
-                            🏪 Best One-Store Basket
-
-                        </Text>
-
-                        <Text
-
-                            style={{
-
-                                color:"#666",
-
-                                marginTop:10,
-
-                                lineHeight:22
-
-                            }}
-
-                            >
-
-                            BreadCrumb analysed your selected products and found the cheapest supermarket where you can buy everything in one trip.
-
-                        </Text>
-                    <View
-
-                            style={{
-
-                                marginTop:20,
-
-                                backgroundColor:"#E8F2FF",
+                                backgroundColor:"#C7D72D",
 
                                 borderRadius:18,
 
-                                padding:16
+                                paddingVertical:18,
+
+                                alignItems:"center"
 
                             }}
 
                         >
 
-                        <Text
-
-                            style={{
-
-                                color:"#666"
-
-                            }}
-
-                        >
-
-                        Selected Store
-
-                        </Text>
-
-                        <Text
-
-                            style={{
-
-                                fontSize:24,
-
-                                fontWeight:"700",
-
-                                color:"#1565C0",
-
-                                marginTop:5
-
-                            }}
-
-                        >
-
-                        🏆 {oneStore.selectedStore}
-
-                        </Text>
-
-                    </View>
-                    <View
-
-                        style={{
-
-                            marginTop:20,
-
-                            borderRadius:18,
-
-                            backgroundColor:"#F9F9F9",
-
-                            padding:15
-
-                        }}
-
-                        >
-
-                    <View
-
-                        style={{
-
-                            flexDirection:"row",
-
-                            justifyContent:"space-between",
-
-                            marginBottom:12
-
-                        }}
-
-                    >
-
-                    <Text
-
-                        style={{
-
-                            fontWeight:"700"
-
-                        }}
-
-                    >
-
-                    Store
-
-                    </Text>
-
-                    <Text
-
-                        style={{
-
-                            fontWeight:"700"
-
-                        }}
-
-                    >
-
-                    Total
-
-                    </Text>
-
-                    </View>
-
-                    {
-
-                        oneStore.rankings.map(store => (
-
-                            <View
-
-                                key={store.name}
+                            <Text
 
                                 style={{
 
-                                    flexDirection:"row",
+                                    color:"#FFF",
 
-                                    justifyContent:"space-between",
+                                    fontSize:18,
 
-                                    paddingVertical:8
+                                    fontWeight:"700"
 
                                 }}
 
                             >
 
-                                <Text>
+                                Apply Smart Basket
 
-                                    {
+                            </Text>
 
-                                        store.name === oneStore.selectedStore
+                        </TouchableOpacity>
 
-                                            ? "🏆 " + store.name
-
-                                            : store.name
-
-                                    }
-
-                                </Text>
-
-                                <Text>
-
-                                    E{store.total}
-
-                                </Text>
-
-                            </View>
-
-                        ))
-
-                    }
-
-                    </View>
-                <View
-
-                        style={{
-
-                            marginTop:20
-
-                        }}
-
-                    >
-
-                    <Text
-
-                        style={{
-
-                            fontWeight:"700",
-
-                            marginBottom:10
-
-                        }}
-
-                    >
-
-                    Products Included
-
-                    </Text>
-
-                    {
-
-                        oneStore.products.map(item => (
-
-                            <View
-
-                                key={item.id}
-
-                                style={{
-
-                                    flexDirection:"row",
-
-                                    justifyContent:"space-between",
-
-                                    marginBottom:8
-
-                                }}
-
-                            >
-
-                                <Text>
-
-                                    • {item.name}
-
-                                </Text>
-
-                                <Text>
-
-                                    E{item.price}
-
-                                </Text>
-
-                            </View>
-
-                        ))
-
-                    }
-
-                </View>
-                <View
-
-                    style={{
-
-                        flexDirection:"row",
-
-                        justifyContent:"space-between",
-
-                        marginTop:20,
-
-                        borderTopWidth:1,
-
-                        borderTopColor:"#EEE",
-
-                        paddingTop:15
-
-                    }}
-
-                >
-
-                <View>
-
-                <Text>Total</Text>
-
-                <Text
-
-                    style={{
-
-                        fontWeight:"700",
-
-                        fontSize:20
-
-                    }}
-
-                >
-
-                E{oneStore.total}
-
-                </Text>
-
-                </View>
-
-                <View
-
-                    style={{
-
-                        alignItems:"flex-end"
-
-                    }}
-
-                >
-
-                <Text>You Save</Text>
-
-                <Text
-
-                    style={{
-
-                        fontWeight:"700",
-
-                        fontSize:20,
-
-                        color:"#22A45D"
-
-                    }}
-
-                >
-
-                E{oneStore.savings}
-
-                </Text>
-
-                </View>
-
-                </View>
-
-                </TouchableOpacity>
-
-                    </>
-                )}
-                <View
-                    style={{
-                        marginHorizontal:20,
-                        marginBottom:40,
-                        backgroundColor:"#FFF9E8",
-                        borderRadius:22,
-                        padding:20,
-                        borderLeftWidth:6,
-                        borderLeftColor:"#F4B400"
-                    }}
-                >
-
-                    <View
-                        style={{
-                            flexDirection:"row",
-                            alignItems:"center"
-                        }}
-                    >
-
-                        <Ionicons
-                            name="sparkles"
-                            size={20}
-                            color="#F4B400"
-                        />
-
-                        <Text
-                            style={{
-                                marginLeft:10,
-                                fontSize:19,
-                                fontWeight:"700",
-                                color:"#222"
-                            }}
-                        >
-                            BreadCrumb Recommendation
-                        </Text>
-
-                    </View>
-
-                    <Text
-                        style={{
-                            marginTop:18,
-                            color:"#555",
-                            lineHeight:24,
-                            fontSize:15
-                        }}
-                    >
-
-                        {
-
-                            oneStore.savings >= maximumSavings.savings - 15
-
-                            ?
-
-                            `We recommend the Best One-Store Basket. You'll save E${oneStore.savings} while only visiting ${oneStore.selectedStore}. The extra savings from travelling to multiple stores are relatively small, making this the most convenient option.`
-
-                            :
-
-                            `We recommend the Maximum Savings strategy. You'll save E${maximumSavings.savings}, which is significantly more than shopping at one supermarket. If your priority is saving money, visiting multiple stores is worthwhile.`
-
-                        }
-
-                    </Text>
-
-                </View>
+                        </>
+                        )}
 
             </ScrollView>
         </SafeAreaView>

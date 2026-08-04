@@ -3,79 +3,63 @@ import { StyleSheet } from "react-native";
 import Colors from "../styles/Colors";
 
 export default StyleSheet.create({
+   container: {
+    flex: 1,
 
-    container: {
+    backgroundColor: Colors.background,
+  },
 
-        flex: 1,
+  scrollContainer: {
+    paddingHorizontal: 16,
 
-        backgroundColor: Colors.background
+    paddingBottom: 110,
+  },
 
-    },
+  categoryRow: {
+    flexDirection: "row",
 
-    scrollContainer: {
+    justifyContent: "space-between",
 
-        paddingHorizontal: 16,
+    marginTop: 8,
 
-        paddingBottom: 110
+    marginBottom: 10,
+  },
 
-    },
+  sectionHeader: {
+    flexDirection: "row",
 
-    categoryRow: {
+    justifyContent: "space-between",
 
-        flexDirection: "row",
+    alignItems: "center",
 
-        justifyContent: "space-between",
+    marginTop: 22,
 
-        marginTop: 8,
+    marginBottom: 12,
+  },
 
-        marginBottom: 10
+  sectionTitle: {
+    fontSize: 20,
 
-    },
+    fontWeight: "700",
 
-    sectionHeader: {
+    color: Colors.text,
+  },
 
-        flexDirection: "row",
+  seeAll: {
+    color: "#5A6B00",
 
-        justifyContent: "space-between",
+    fontWeight: "600",
 
-        alignItems: "center",
+    fontSize: 13,
+  },
 
-        marginTop: 22,
-
-        marginBottom: 12
-
-    },
-
-    sectionTitle: {
-
-        fontSize: 20,
-
-        fontWeight: "700",
-
-        color: Colors.text
-
-    },
-
-    seeAll: {
-
-        color: "#5A6B00",
-
-        fontWeight: "600",
-
-        fontSize: 13
-
-    },
-
-    priceDropGrid: {
-
+  priceDropGrid: {
     flexDirection: "row",
 
     flexWrap: "wrap",
 
     justifyContent: "space-between",
 
-    marginBottom: 30
-
-},
-
+    marginBottom: 30,
+  },
 });

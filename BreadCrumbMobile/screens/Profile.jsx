@@ -10,54 +10,59 @@ import {
 
 import { Ionicons } from "@expo/vector-icons";
 
-import { auth, db } from "../services/firebase";
+import { auth } from "../services/firebase";
 
 import { logoutUser } from "../services/authService";
 
-import {
-    doc,
-    getDoc
-} from "firebase/firestore";
+import api from "../services/api";
 
 import BottomNavigation from "../components/BottomNavigation";
+
+import { useTheme } from "../context/ThemeContext";
 
 export default function Profile({ navigation }) {
 
     const [userData, setUserData] = useState(null);
 
+    const {
+        colors,
+        getFontSize,
+        textSize
+    } = useTheme();
+
     useEffect(() => {
+    async function loadUser() {
 
-        async function loadUser() {
+        try {
 
-            try {
+            const currentUser = auth.currentUser;
 
-                const currentUser = auth.currentUser;
+            if (!currentUser) return;
 
-                if (!currentUser) return;
+            const token = await currentUser.getIdToken();
 
-                const document = await getDoc(
-                    doc(
-                        db,
-                        "users",
-                        currentUser.uid
-                    )
-                );
-
-                if (document.exists()) {
-
-                    setUserData(document.data());
-
+            const response = await api.get(
+                "/auth/profile",
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
                 }
+            );
 
-            }
-
-            catch (error) {
-
-                console.log(error);
-
-            }
+            setUserData(response.data.user);
 
         }
+
+        catch (error) {
+
+            console.log("PROFILE ERROR");
+
+            console.log(error.response?.data || error.message);
+
+        }
+
+    }
 
         loadUser();
 
@@ -116,7 +121,7 @@ export default function Profile({ navigation }) {
         <SafeAreaView
             style={{
                 flex: 1,
-                backgroundColor: "#F6F7FB"
+                backgroundColor: colors.background
             }}
         >
 
@@ -126,11 +131,11 @@ export default function Profile({ navigation }) {
 
                 <Text
                     style={{
-                        fontSize: 30,
+                        fontSize:getFontSize(30),
                         fontWeight: "700",
                         marginTop: 25,
                         marginLeft: 20,
-                        color: "#222"
+                        color: colors.text
                     }}
                 >
                     Profile
@@ -165,7 +170,7 @@ export default function Profile({ navigation }) {
                                 style={{
                                     fontSize: 46,
                                     fontWeight: "700",
-                                    color: "#222"
+                                    color: colors.text
                                 }}
                             >
 
@@ -189,7 +194,7 @@ export default function Profile({ navigation }) {
                                 width: 38,
                                 height: 38,
                                 borderRadius: 19,
-                                backgroundColor: "#FFFFFF",
+                                backgroundColor: colors.card,
                                 justifyContent: "center",
                                 alignItems: "center",
                                 elevation: 4
@@ -199,7 +204,7 @@ export default function Profile({ navigation }) {
                             <Ionicons
                                 name="pencil"
                                 size={18}
-                                color="#22A45D"
+                                color={colors.accent}
                             />
 
                         </View>
@@ -209,9 +214,9 @@ export default function Profile({ navigation }) {
                     <Text
                         style={{
                             marginTop: 20,
-                            fontSize: 24,
+                            fontSize:getFontSize(24),
                             fontWeight: "700",
-                            color: "#222"
+                            color: colors.text
                         }}
                     >
 
@@ -222,7 +227,7 @@ export default function Profile({ navigation }) {
                     <Text
                         style={{
                             marginTop: 5,
-                            color: "#666",
+                            color: colors.secondary,
                             fontSize: 15
                         }}
                     >
@@ -234,7 +239,7 @@ export default function Profile({ navigation }) {
                     <Text
                         style={{
                             marginTop: 6,
-                            color: "#888",
+                            color: colors.secondary,
                             fontSize: 15
                         }}
                     >
@@ -246,7 +251,7 @@ export default function Profile({ navigation }) {
                     <Text
                         style={{
                             marginTop: 6,
-                            color: "#22A45D",
+                            color: colors.accent,
                             fontWeight: "600"
                         }}
                     >
@@ -267,9 +272,9 @@ export default function Profile({ navigation }) {
 
                     <Text
                         style={{
-                            fontSize:20,
+                            fontSize:getFontSize(20),
                             fontWeight:"700",
-                            color:"#222",
+                            color: colors.text,
                             marginBottom:15
                         }}
                     >
@@ -278,7 +283,7 @@ export default function Profile({ navigation }) {
 
                     <View
                         style={{
-                            backgroundColor:"#FFFFFF",
+                            backgroundColor: colors.card,
                             borderRadius:20,
                             overflow:"hidden",
                             elevation:2
@@ -294,7 +299,7 @@ export default function Profile({ navigation }) {
                                 alignItems:"center",
                                 padding:18,
                                 borderBottomWidth:1,
-                                borderBottomColor:"#F2F2F2"
+                                borderBottomColor: colors.border
                             }}
                         >
 
@@ -308,14 +313,14 @@ export default function Profile({ navigation }) {
                                 <Ionicons
                                     name="create-outline"
                                     size={22}
-                                    color="#22A45D"
+                                    color={colors.accent}
                                 />
 
                                 <Text
                                     style={{
                                         marginLeft:15,
-                                        fontSize:16,
-                                        color:"#222"
+                                        fontSize:getFontSize(16),
+                                        color: colors.text
                                     }}
                                 >
                                     Edit Profile
@@ -326,7 +331,7 @@ export default function Profile({ navigation }) {
                             <Ionicons
                                 name="chevron-forward"
                                 size={20}
-                                color="#999"
+                                color= {colors.secondary}
                             />
 
                         </TouchableOpacity>
@@ -358,14 +363,14 @@ export default function Profile({ navigation }) {
                                 <Ionicons
                                     name="archive-outline"
                                     size={22}
-                                    color="#22A45D"
+                                    color={colors.accent}
                                 />
 
                                 <Text
                                     style={{
                                         marginLeft:15,
-                                        fontSize:16,
-                                        color:"#222"
+                                        fontSize:getFontSize(16),
+                                        color: colors.text
                                     }}
                                 >
                                     Archived Shopping Lists
@@ -376,7 +381,7 @@ export default function Profile({ navigation }) {
                             <Ionicons
                                 name="chevron-forward"
                                 size={20}
-                                color="#999"
+                                color= {colors.secondary}
                             />
 
                         </TouchableOpacity>
@@ -396,9 +401,9 @@ export default function Profile({ navigation }) {
 
                     <Text
                         style={{
-                            fontSize:20,
+                            fontSize:getFontSize(20),
                             fontWeight:"700",
-                            color:"#222",
+                            color: colors.text,
                             marginBottom:15
                         }}
                     >
@@ -407,7 +412,7 @@ export default function Profile({ navigation }) {
 
                     <View
                         style={{
-                            backgroundColor:"#FFFFFF",
+                            backgroundColor: colors.card,
                             borderRadius:20,
                             overflow:"hidden",
                             elevation:2
@@ -423,7 +428,7 @@ export default function Profile({ navigation }) {
                                 alignItems:"center",
                                 padding:18,
                                 borderBottomWidth:1,
-                                borderBottomColor:"#F2F2F2"
+                                borderBottomColor: colors.border
                             }}
                         >
 
@@ -437,13 +442,14 @@ export default function Profile({ navigation }) {
                                 <Ionicons
                                     name="moon-outline"
                                     size={22}
-                                    color="#22A45D"
+                                    color={colors.accent}
                                 />
 
                                 <Text
                                     style={{
                                         marginLeft:15,
-                                        fontSize:16
+                                        fontSize:getFontSize(16),
+                                        color: colors.text
                                     }}
                                 >
                                     Appearance
@@ -454,7 +460,7 @@ export default function Profile({ navigation }) {
                             <Ionicons
                                 name="chevron-forward"
                                 size={20}
-                                color="#999"
+                                color= {colors.secondary}
                             />
 
                         </TouchableOpacity>
@@ -467,7 +473,7 @@ export default function Profile({ navigation }) {
                                 alignItems:"center",
                                 padding:18,
                                 borderBottomWidth:1,
-                                borderBottomColor:"#F2F2F2"
+                                borderBottomColor: colors.border
                             }}
                         >
 
@@ -481,13 +487,14 @@ export default function Profile({ navigation }) {
                                 <Ionicons
                                     name="language-outline"
                                     size={22}
-                                    color="#22A45D"
+                                    color={colors.accent}
                                 />
 
                                 <Text
                                     style={{
                                         marginLeft:15,
-                                        fontSize:16
+                                        fontSize:getFontSize(16),
+                                        color: colors.text
                                     }}
                                 >
                                     Language
@@ -497,7 +504,7 @@ export default function Profile({ navigation }) {
 
                             <Text
                                 style={{
-                                    color:"#666"
+                                    color: colors.secondary
                                 }}
                             >
                                 English
@@ -514,7 +521,7 @@ export default function Profile({ navigation }) {
                                 alignItems:"center",
                                 padding:18,
                                 borderBottomWidth:1,
-                                borderBottomColor:"#F2F2F2"
+                                borderBottomColor: colors.border
                             }}
                         >
 
@@ -528,13 +535,14 @@ export default function Profile({ navigation }) {
                                 <Ionicons
                                     name="text-outline"
                                     size={22}
-                                    color="#22A45D"
+                                    color={colors.accent}
                                 />
 
                                 <Text
                                     style={{
                                         marginLeft:15,
-                                        fontSize:16
+                                        fontSize:getFontSize(16),
+                                        color: colors.text
                                     }}
                                 >
                                     Text Size
@@ -544,10 +552,12 @@ export default function Profile({ navigation }) {
 
                             <Text
                                 style={{
-                                    color:"#666"
+                                    color: colors.secondary,
+                                    fontSize: getFontSize(15),
+                                    textTransform: "capitalize"
                                 }}
                             >
-                                Medium
+                                {textSize}
                             </Text>
 
                         </TouchableOpacity>
@@ -572,13 +582,14 @@ export default function Profile({ navigation }) {
                                 <Ionicons
                                     name="cash-outline"
                                     size={22}
-                                    color="#22A45D"
+                                    color={colors.accent}
                                 />
 
                                 <Text
                                     style={{
                                         marginLeft:15,
-                                        fontSize:16
+                                        fontSize:getFontSize(16),
+                                        color: colors.text
                                     }}
                                 >
                                     Currency
@@ -588,7 +599,7 @@ export default function Profile({ navigation }) {
 
                             <Text
                                 style={{
-                                    color:"#666"
+                                    color: colors.secondary
                                 }}
                             >
                                 {currency}
@@ -610,9 +621,9 @@ export default function Profile({ navigation }) {
 
                     <Text
                         style={{
-                            fontSize:20,
+                            fontSize:getFontSize(20),
                             fontWeight:"700",
-                            color:"#222",
+                            color: colors.text,
                             marginBottom:15
                         }}
                     >
@@ -621,7 +632,7 @@ export default function Profile({ navigation }) {
 
                     <View
                         style={{
-                            backgroundColor:"#FFFFFF",
+                            backgroundColor: colors.card,
                             borderRadius:20,
                             overflow:"hidden",
                             elevation:2
@@ -636,7 +647,7 @@ export default function Profile({ navigation }) {
                                 alignItems:"center",
                                 padding:18,
                                 borderBottomWidth:1,
-                                borderBottomColor:"#F2F2F2"
+                                borderBottomColor: colors.border
                             }}
                             onPress={() =>
                                 navigation.navigate("HelpScreen")
@@ -653,13 +664,14 @@ export default function Profile({ navigation }) {
                                 <Ionicons
                                     name="help-circle-outline"
                                     size={22}
-                                    color="#22A45D"
+                                    color={colors.accent}
                                 />
 
                                 <Text
                                     style={{
                                         marginLeft:15,
-                                        fontSize:16
+                                        fontSize:getFontSize(16),
+                                        color: colors.text
                                     }}
                                 >
                                     Help & Support
@@ -670,7 +682,7 @@ export default function Profile({ navigation }) {
                             <Ionicons
                                 name="chevron-forward"
                                 size={20}
-                                color="#999"
+                                color= {colors.secondary}
                             />
 
                         </TouchableOpacity>
@@ -698,13 +710,14 @@ export default function Profile({ navigation }) {
                                 <Ionicons
                                     name="information-circle-outline"
                                     size={22}
-                                    color="#22A45D"
+                                    color={colors.accent}
                                 />
 
                                 <Text
                                     style={{
                                         marginLeft:15,
-                                        fontSize:16
+                                        fontSize:getFontSize(16),
+                                        color: colors.text
                                     }}
                                 >
                                     About BreadCrumb
@@ -715,7 +728,7 @@ export default function Profile({ navigation }) {
                             <Ionicons
                                 name="chevron-forward"
                                 size={20}
-                                color="#999"
+                                color= {colors.secondary}
                             />
 
                         </TouchableOpacity>
@@ -756,7 +769,7 @@ export default function Profile({ navigation }) {
                     <Text
                         style={{
                             color:"#FFFFFF",
-                            fontSize:17,
+                            fontSize:getFontSize(17),
                             fontWeight:"700",
                             marginLeft:10
                         }}

@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Firebase Admin Service Account
+firebase-service-account.json
+
+# If you didn't rename the file, ignore its actual name instead
+breadcrumb-56d77-firebase-adminsdk-*.json
+
+# Logs
+npm-debug.log*

@@ -14,6 +14,8 @@ import { Ionicons } from "@expo/vector-icons";
 
 import styles from "../styles/BottomNavigationStyles";
 
+import { useTheme } from "../context/ThemeContext";
+
 export default function BottomNavigation({
 
     navigation,
@@ -21,6 +23,11 @@ export default function BottomNavigation({
     active
 
 }) {
+
+    const {
+        colors,
+        getFontSize
+    } = useTheme();
 
     const tabs = [
 
@@ -78,72 +85,57 @@ export default function BottomNavigation({
 
     return (
 
-        <View style={styles.container}>
-
+        <View
+            style={[
+                styles.container,
+                {
+                    backgroundColor: colors.card,
+                    borderTopColor: colors.border
+                }
+            ]}
+        >
             {
-
                 tabs.map((tab) => (
-
                     <TouchableOpacity
-
                         key={tab.name}
-
                         style={styles.tab}
-
                         onPress={() => navigation.navigate(tab.screen)}
-
                     >
 
                         <Ionicons
-
                             name={
-
                                 active === tab.name
-
                                     ? tab.icon
-
                                     : `${tab.icon}-outline`
-
                             }
 
                             size={24}
 
                             color={
-
                                 active === tab.name
-
-                                    ? "#222222"
-
-                                    : "#999999"
-
+                                    ? colors.accent
+                                    : colors.secondary
                             }
-
                         />
 
                         <Text
-
                             style={[
-
                                 styles.label,
-
-                                active === tab.name && styles.activeLabel
-
+                                {
+                                    color:
+                                        active === tab.name
+                                            ? colors.accent
+                                            : colors.secondary,
+                                    fontSize: getFontSize(12)
+                                }
                             ]}
-
                         >
-
                             {tab.name}
-
                         </Text>
-
                     </TouchableOpacity>
-
                 ))
-
             }
-
         </View>
-
     );
 
 }

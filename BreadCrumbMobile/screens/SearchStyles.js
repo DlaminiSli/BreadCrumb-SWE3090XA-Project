@@ -95,29 +95,33 @@ export default StyleSheet.create({
 
         marginBottom: 10,
 
-        paddingLeft: 4
+        maxHeight: 55
 
     },
 
     categoryChip: {
 
-        backgroundColor: "#FFFFFF",
+        backgroundColor:"#FFFFFF",
 
-        paddingHorizontal: 18,
+        paddingHorizontal:18,
 
-        paddingVertical: 10,
+        height:45,
 
-        borderRadius: 25,
+        justifyContent:"center",
 
-        marginRight: 10,
+        alignSelf:"center",
 
-        elevation: 2,
+        borderRadius:25,
 
-        shadowColor: "#000",
+        marginRight:10,
 
-        shadowOpacity: 0.05,
+        elevation:2,
 
-        shadowRadius: 3
+        shadowColor:"#000",
+
+        shadowOpacity:0.05,
+
+        shadowRadius:3
 
     },
 
