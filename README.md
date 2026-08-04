@@ -125,7 +125,3 @@ Bachelor of Science in Software Engineering
 2026
 
 ---
-
-# License
-
-This project was developed for academic purposes as part of the Bachelor of Science in Software Engineering programme at the United States International University – Africa (USIU-A).
