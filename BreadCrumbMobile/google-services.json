@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1031063304988",
+    "project_id": "breadcrumb-56d77",
+    "storage_bucket": "breadcrumb-56d77.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1031063304988:android:4aadb3f016d6c4be6298d9",
+        "android_client_info": {
+          "package_name": "com.slie.breadcrumbmobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1031063304988-druniab04p2m9d4vh9s29jnhco5agn3l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.slie.breadcrumbmobile",
+            "certificate_hash": "47de42b7b62b0d88b36b2233d11a1ef0394d7ad9"
+          }
+        },
+        {
+          "client_id": "1031063304988-c69cd5qi6bud6j11grvggupjnsg5k22k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFZS4uB2tql_4dg4FZMZ2t0yvK2-sYKOc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1031063304988-c69cd5qi6bud6j11grvggupjnsg5k22k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
