@@ -31,169 +31,88 @@ import TextSizeScreen from "../screens/TextSizeScreen";
 import CatalogueViewer from "../screens/CatalogueViewer";
 import ComboDetails from "../screens/ComboDetails";
 import Notifications from "../screens/Notifications";
+import CurrencyScreen from "../screens/CurrencyScreen";
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
 
     return (
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Splash"
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="Splash" component={SplashScreen} />
 
-        <NavigationContainer>
+          <Stack.Screen name="OnboardingOne" component={OnboardingOne} />
 
-            <Stack.Navigator
-                initialRouteName="Splash"
-                screenOptions={{
-                    headerShown: false
-                }}
-            >
+          <Stack.Screen name="OnboardingTwo" component={OnboardingTwo} />
 
-                <Stack.Screen
-                    name="Splash"
-                    component={SplashScreen}
-                />
+          <Stack.Screen name="OnboardingThree" component={OnboardingThree} />
 
-                <Stack.Screen
-                    name="OnboardingOne"
-                    component={OnboardingOne}
-                />
+          <Stack.Screen name="LoggedOut" component={LoggedOut} />
 
-                <Stack.Screen
-                    name="OnboardingTwo"
-                    component={OnboardingTwo}
-                />
+          <Stack.Screen name="Signup" component={Signup} />
 
-                <Stack.Screen
-                    name="OnboardingThree"
-                    component={OnboardingThree}
-                />
+          <Stack.Screen name="Login" component={Login} />
 
-                <Stack.Screen
-                    name="LoggedOut"
-                    component={LoggedOut}
-                />
+          <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
 
-                <Stack.Screen
-                    name="Signup"
-                    component={Signup}
-                />
+          <Stack.Screen name="Dashboard" component={Dashboard} />
 
-                <Stack.Screen
-                    name="Login"
-                    component={Login}
-                />
+          <Stack.Screen name="Search" component={Search} />
 
-                <Stack.Screen
-                    name="ForgotPassword"
-                    component={ForgotPassword}
-                />
+          <Stack.Screen name="ShoppingLists" component={ShoppingLists} />
 
-                <Stack.Screen
-                    name="Dashboard"
-                    component={Dashboard}
-                />
+          <Stack.Screen name="Alerts" component={Alerts} />
 
-                <Stack.Screen
-                    name="Search"
-                    component={Search}
-                />
+          <Stack.Screen name="Profile" component={Profile} />
 
-                <Stack.Screen
-                    name="ShoppingLists"
-                    component={ShoppingLists}
-                />
+          <Stack.Screen name="ProductDetails" component={ProductDetails} />
 
-                <Stack.Screen
-                    name="Alerts"
-                    component={Alerts}
-                />
+          <Stack.Screen name="CategoryProducts" component={CategoryProducts} />
 
-                <Stack.Screen
-                    name="Profile"
-                    component={Profile}
-                />
+          <Stack.Screen name="Catalogue" component={Catalogue} />
 
-                <Stack.Screen
-                    name="ProductDetails"
-                    component={ProductDetails}
-                />
+          <Stack.Screen
+            name="ComparePrice"
+            component={ComparePrice}
+            options={{
+              headerShown: false,
+            }}
+          />
 
-                <Stack.Screen
-                    name="CategoryProducts"
-                    component={CategoryProducts}
-                />
+          <Stack.Screen
+            name="ShoppingListDetails"
+            component={ShoppingListDetails}
+          />
 
-                <Stack.Screen
-                    name="Catalogue"
-                    component={Catalogue}
-                />
+          <Stack.Screen name="SmartBasket" component={SmartBasketScreen} />
 
-                <Stack.Screen
-                    name="ComparePrice"
-                    component={ComparePrice}
-                    options={{
-                        headerShown: false
-                    }}
-                />
+          <Stack.Screen name="SavingsScreen" component={SavingsScreen} />
 
-                <Stack.Screen
-                    name="ShoppingListDetails"
-                    component={ShoppingListDetails}
-                />
-                
-                <Stack.Screen
-                    name="SmartBasket"
-                    component={SmartBasketScreen}
-                />
+          <Stack.Screen name="HelpScreen" component={HelpScreen} />
 
-                <Stack.Screen
-                    name="SavingsScreen"
-                    component={SavingsScreen}
-                />
+          <Stack.Screen name="AboutScreen" component={AboutScreen} />
 
-                <Stack.Screen
-                    name="HelpScreen"
-                    component={HelpScreen}
-                />
+          <Stack.Screen name="EditProfile" component={EditProfileScreen} />
 
-                <Stack.Screen
-                    name="AboutScreen"
-                    component={AboutScreen}
-                />
+          <Stack.Screen name="Appearance" component={AppearanceScreen} />
 
-                <Stack.Screen
-                    name="EditProfile"
-                    component={EditProfileScreen}
-                />
+          <Stack.Screen name="TextSize" component={TextSizeScreen} />
 
-                <Stack.Screen
-                    name="Appearance"
-                    component={AppearanceScreen}
-                />
+          <Stack.Screen name="CatalogueViewer" component={CatalogueViewer} />
 
-                <Stack.Screen
-                    name="TextSize"
-                    component={TextSizeScreen}
-                />
+          <Stack.Screen name="ComboDetails" component={ComboDetails} />
 
-                <Stack.Screen
-                    name="CatalogueViewer"
-                    component={CatalogueViewer}
-                />
+          <Stack.Screen name="Notifications" component={Notifications} />
 
-                <Stack.Screen
-                    name="ComboDetails"
-                    component={ComboDetails}
-                />
-
-                <Stack.Screen
-                    name="Notifications"
-                    component={Notifications}
-                />
-
-            </Stack.Navigator>
-
-        </NavigationContainer>
-
+          <Stack.Screen name="Currency" component={CurrencyScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
     );
 
 }

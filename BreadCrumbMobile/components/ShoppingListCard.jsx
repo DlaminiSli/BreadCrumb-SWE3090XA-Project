@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 
@@ -9,6 +9,14 @@ import { Ionicons } from "@expo/vector-icons";
 import styles from "../styles/ShoppingListsStyles";
 
 import { useTheme } from "../context/ThemeContext";
+
+import { formatCurrency } from "../utils/currency";
+
+import { auth } from "../services/firebase";
+
+import api from "../services/api";
+
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function ShoppingListCard({
   list,
@@ -24,6 +32,8 @@ export default function ShoppingListCard({
   onReuse,
 }) {
   const { colors, getFontSize } = useTheme();
+
+  const [userCurrency, setUserCurrency] = useState("Eswatini");
 
   const leftAction = () => (
     <TouchableOpacity
@@ -111,6 +121,38 @@ export default function ShoppingListCard({
     </TouchableOpacity>
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      async function loadCurrency() {
+        try {
+          const currentUser = auth.currentUser;
+
+          if (!currentUser) return;
+
+          const token = await currentUser.getIdToken();
+
+          const response = await api.get("/auth/profile", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          setUserCurrency(response.data.user.currency || "Eswatini");
+        } catch (error) {
+          console.log(error.response?.data || error.message);
+        }
+      }
+
+      loadCurrency();
+    }, []),
+  );
+
+  const totalSpent = (list.items || []).reduce((total, item) => {
+    return total + Number(item.price || 0) * Number(item.quantity || 1);
+  }, 0);
+
+  const remainingBudget = Number(list.budget || 0) - totalSpent;
+
   return (
     <Swipeable renderLeftActions={leftAction} renderRightActions={rightAction}>
       <View
@@ -195,7 +237,7 @@ export default function ShoppingListCard({
                   },
                 ]}
               >
-                E{list.budget}
+                {formatCurrency(Number(list.budget || 0), userCurrency)}
               </Text>
             </View>
 
@@ -250,13 +292,15 @@ export default function ShoppingListCard({
                     : [
                         styles.remaining,
                         {
-                          color: "#22A45D",
+                          color: remainingBudget >= 0 ? "#22A45D" : "#D32F2F",
                           fontSize: getFontSize(18),
                         },
                       ]
                 }
               >
-                {archived ? "Completed" : `E${list.budget}`}
+                {archived
+                  ? "Completed"
+                  : formatCurrency(remainingBudget, userCurrency)}
               </Text>
             </View>
           </View>

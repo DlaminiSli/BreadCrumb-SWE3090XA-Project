@@ -2,19 +2,12 @@ import React, { useState } from "react";
 import { registerUser } from "../services/authService";
 
 import {
-
-    View,
-
-    Text,
-
-    Image,
-
-    ScrollView,
-
-    TouchableOpacity,
-
-    TextInput
-
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -34,251 +27,162 @@ import PrimaryButton from "../components/PrimaryButton";
 import styles from "./SignupStyles";
 
 export default function Signup({ navigation }) {
+  const [fullName, setFullName] = useState("");
 
-    const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
 
-    const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
-    const [phoneNumber, setPhoneNumber] = useState("");
+  const [password, setPassword] = useState("");
 
-    const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-    const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-    const [loading, setLoading] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState({
+    country: "Eswatini",
 
-    const [selectedCountry, setSelectedCountry] = useState({
+    countryCode: "+268",
 
-        country: "Eswatini",
+    flag: "🇸🇿",
+  });
 
-        countryCode: "+268",
-
-        flag: "🇸🇿"
-
-    })
-
-    async function handleSignup() {
-
+  async function handleSignup() {
     if (
-
-        fullName.trim() === "" ||
-
-        email.trim() === "" ||
-
-        phoneNumber.trim() === "" ||
-
-        password.trim() === "" ||
-
-        confirmPassword.trim() === ""
-
+      fullName.trim() === "" ||
+      email.trim() === "" ||
+      phoneNumber.trim() === "" ||
+      password.trim() === "" ||
+      confirmPassword.trim() === ""
     ) {
+      alert("Please complete all the fields.");
 
-        alert("Please complete all the fields.");
-
-        return;
-
+      return;
     }
 
     if (password !== confirmPassword) {
+      alert("Passwords do not match.");
 
-        alert("Passwords do not match.");
-
-        return;
-
+      return;
     }
 
     try {
+      setLoading(true);
 
-        setLoading(true);
+      await registerUser({
+        fullName,
 
-        await registerUser({
+        email,
 
-            fullName,
+        password,
 
-            email,
+        phoneNumber,
 
-            password,
+        country: selectedCountry.country,
 
-            phoneNumber,
+        currency: selectedCountry.country,
 
-            country: selectedCountry.country,
+        countryCode: selectedCountry.countryCode,
+      });
 
-            countryCode: selectedCountry.countryCode
+      setLoading(false);
 
-        });
+      alert("Account created successfully!");
 
-        setLoading(false);
+      navigation.replace("Dashboard");
+    } catch (error) {
+      setLoading(false);
 
-        alert("Account created successfully!");
-
-        navigation.replace("Dashboard");
-
+      alert(error.message);
     }
+  }
 
-    catch (error) {
+  return (
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+      >
+        <Ionicons name="arrow-back" size={28} color="#222" />
+      </TouchableOpacity>
 
-        setLoading(false);
+      <View style={styles.logoContainer}>
+        <Image
+          source={require("../assets/logos/logo.png")}
+          style={styles.logo}
+        />
+      </View>
 
-        alert(error.message);
+      <Text style={styles.title}>Create Account</Text>
 
-    }
+      <Text style={styles.subtitle}>Start saving smarter today.</Text>
 
-};
+      <InputField
+        icon="person-outline"
+        placeholder="Full Name"
+        value={fullName}
+        onChangeText={setFullName}
+      />
 
-    return (
+      <InputField
+        icon="mail-outline"
+        placeholder="Email Address"
+        keyboardType="email-address"
+        value={email}
+        onChangeText={setEmail}
+      />
 
-        <ScrollView
+      <CountryDropdown
+        selectedCountry={selectedCountry}
+        setSelectedCountry={setSelectedCountry}
+      />
 
-            style={styles.container}
+      <View style={styles.phoneContainer}>
+        <View style={styles.countryCodeContainer}>
+          <Text style={styles.countryCode}>{selectedCountry.countryCode}</Text>
+        </View>
 
-            showsVerticalScrollIndicator={false}
+        <TextInput
+          style={styles.phoneInput}
+          placeholder="Phone Number"
+          keyboardType="phone-pad"
+          placeholderTextColor="#999"
+          value={phoneNumber}
+          onChangeText={setPhoneNumber}
+        />
+      </View>
 
-        >
+      {
+        <>
+          <PasswordInput
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+          />
+          <PasswordInput
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+          />
+          <SocialDivider />
+          <GoogleButton
+            onPress={() => {
+              alert("Google Sign-In will be connected in the next step.");
+            }}
+          />
+          <PrimaryButton
+            title={loading ? "Creating Account..." : "Sign Up"}
+            onPress={handleSignup}
+          />
+          <View style={styles.loginContainer}>
+            <Text style={styles.loginLabel}>Already have an account?</Text>
 
-            <TouchableOpacity
-
-                style={styles.backButton}
-
-                onPress={() => navigation.goBack()}
-
-            >
-
-                <Ionicons
-
-                    name="arrow-back"
-
-                    size={28}
-
-                    color="#222"
-
-                />
-
+            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+              <Text style={styles.loginButton}>Login</Text>
             </TouchableOpacity>
-
-            <View style={styles.logoContainer}>
-
-                <Image
-
-                    source={require("../assets/logos/logo.png")}
-
-                    style={styles.logo}
-
-                />
-
-            </View>
-
-            <Text style={styles.title}>
-
-                Create Account
-
-            </Text>
-
-            <Text style={styles.subtitle}>
-
-                Start saving smarter today.
-
-            </Text>
-
-            <InputField
-
-                icon="person-outline"
-
-                placeholder="Full Name"
-
-                value={fullName}
-
-                onChangeText={setFullName}
-
-            />
-
-            <InputField
-                icon="mail-outline"
-                placeholder="Email Address"
-                keyboardType="email-address"
-                value={email}
-                onChangeText={setEmail}
-            />
-
-            <CountryDropdown
-                selectedCountry={selectedCountry}
-                setSelectedCountry={setSelectedCountry}
-            />
-
-            <View style={styles.phoneContainer}>
-                <View style={styles.countryCodeContainer}>
-                    <Text style={styles.countryCode}>
-                        {selectedCountry.countryCode}
-
-                    </Text>
-
-                </View>
-
-                <TextInput
-
-                    style={styles.phoneInput}
-
-                    placeholder="Phone Number"
-
-                    keyboardType="phone-pad"
-
-                    placeholderTextColor="#999"
-
-                    value={phoneNumber}
-
-                    onChangeText={setPhoneNumber}
-
-                />
-
-            </View>
-
-            {<><PasswordInput
-
-                placeholder="Password"
-
-                value={password}
-
-                onChangeText={setPassword} /><PasswordInput
-
-                    placeholder="Confirm Password"
-
-                    value={confirmPassword}
-
-                    onChangeText={setConfirmPassword} /><SocialDivider /><GoogleButton
-
-                    onPress={() => {
-
-                        alert("Google Sign-In will be connected in the next step.");
-
-                    } } /><PrimaryButton
-
-                    title={loading ? "Creating Account..." : "Sign Up"}
-
-                    onPress={handleSignup} /><View style={styles.loginContainer}>
-
-                    <Text style={styles.loginLabel}>
-
-                        Already have an account?
-
-                    </Text>
-
-                    <TouchableOpacity
-
-                        onPress={() => navigation.navigate("Login")}
-
-                    >
-
-                        <Text style={styles.loginButton}>
-
-                            Login
-
-                        </Text>
-
-                    </TouchableOpacity>
-
-                </View></>}
-
-        </ScrollView>
-
-    );
-
+          </View>
+        </>
+      }
+    </ScrollView>
+  );
 }

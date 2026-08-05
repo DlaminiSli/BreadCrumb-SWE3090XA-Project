@@ -20,6 +20,16 @@ import styles from "../styles/ComparePriceStyles";
 
 import { useTheme } from "../context/ThemeContext";
 
+import { auth } from "../services/firebase";
+
+import api from "../services/api";
+
+import { formatCurrency } from "../utils/currency";
+
+import { useFocusEffect } from "@react-navigation/native";
+
+import { useCallback } from "react";
+
 export default function ComboDetails({
   route,
 
@@ -36,6 +46,8 @@ export default function ComboDetails({
   const { colors, getFontSize } = useTheme();
 
   const [modalVisible, setModalVisible] = useState(false);
+
+  const [userCurrency, setUserCurrency] = useState("Eswatini");
 
   const addToList = (list) => {
     addProduct(
@@ -70,6 +82,32 @@ export default function ComboDetails({
 
     navigation.goBack();
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      async function loadCurrency() {
+        try {
+          const currentUser = auth.currentUser;
+
+          if (!currentUser) return;
+
+          const token = await currentUser.getIdToken();
+
+          const response = await api.get("/auth/profile", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          setUserCurrency(response.data.user.currency || "Eswatini");
+        } catch (error) {
+          console.log(error.response?.data || error.message);
+        }
+      }
+
+      loadCurrency();
+    }, []),
+  );
 
   return (
     <SafeAreaView
@@ -140,7 +178,9 @@ export default function ComboDetails({
             Today's Combo Deal
           </Text>
 
-          <Text style={styles.bestPrice}>E{combo.price}</Text>
+          <Text style={styles.bestPrice}>
+            {formatCurrency(combo.price, userCurrency)}
+          </Text>
 
           <Text
             style={{
@@ -153,10 +193,12 @@ export default function ComboDetails({
               fontSize: 16,
             }}
           >
-            Regular Price E{combo.oldPrice}
+            Regular Price {formatCurrency(combo.oldPrice, userCurrency)}
           </Text>
 
-          <Text style={styles.bestSavings}>Save E{combo.save}</Text>
+          <Text style={styles.bestSavings}>
+            Save {formatCurrency(combo.save, userCurrency)}
+          </Text>
         </View>
 
         <Text
@@ -387,7 +429,7 @@ export default function ComboDetails({
                         marginTop: 6,
                       }}
                     >
-                      Budget: E{item.budget || 0}
+                      Budget: {formatCurrency(item.budget || 0, userCurrency)}
                     </Text>
 
                     <Text

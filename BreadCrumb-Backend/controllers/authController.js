@@ -5,12 +5,13 @@ exports.syncUser = async (req, res) => {
     try {
 
         const {
-            firebaseUID,
-            fullName,
-            email,
-            country,
-            countryCode,
-            phoneNumber
+          firebaseUID,
+          fullName,
+          email,
+          country,
+          currency,
+          countryCode,
+          phoneNumber,
         } = req.body;
 
         let user = await User.findOne({ firebaseUID });
@@ -18,14 +19,13 @@ exports.syncUser = async (req, res) => {
         if (!user) {
 
             user = await User.create({
-
-                firebaseUID,
-                fullName,
-                email,
-                country,
-                countryCode,
-                phoneNumber
-
+              firebaseUID,
+              fullName,
+              email,
+              country,
+              currency,
+              countryCode,
+              phoneNumber,
             });
 
             return res.status(201).json({
@@ -111,67 +111,49 @@ exports.getProfile = async (req, res) => {
 };
 
 exports.updateProfile = async (req, res) => {
+  try {
+    const { fullName, phoneNumber, country, currency, countryCode } = req.body;
 
-    try {
+    const updates = {};
 
-        const {
-            fullName,
-            phoneNumber,
-            country,
-            countryCode
-        } = req.body;
+    if (fullName !== undefined) updates.fullName = fullName;
 
-        const user = await User.findOneAndUpdate(
+    if (phoneNumber !== undefined) updates.phoneNumber = phoneNumber;
 
-            {
-                firebaseUID: req.user.uid
-            },
+    if (country !== undefined) updates.country = country;
 
-            {
-                fullName,
-                phoneNumber,
-                country,
-                countryCode
-            },
+    if (currency !== undefined) updates.currency = currency;
 
-            {
-                new: true
-            }
+    if (countryCode !== undefined) updates.countryCode = countryCode;
 
-        );
+    const user = await User.findOneAndUpdate(
+      {
+        firebaseUID: req.user.uid,
+      },
 
-        if (!user) {
+      updates,
 
-            return res.status(404).json({
+      {
+        new: true,
+      },
+    );
 
-                success: false,
-                message: "User not found."
-
-            });
-
-        }
-
-        res.json({
-
-            success: true,
-            message: "Profile updated successfully.",
-
-            user
-
-        });
-
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
     }
 
-    catch (error) {
-
-        res.status(500).json({
-
-            success: false,
-
-            message: error.message
-
-        });
-
-    }
-
+    res.json({
+      success: true,
+      message: "Profile updated successfully.",
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };

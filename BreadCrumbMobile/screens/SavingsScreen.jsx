@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 
 import {
   SafeAreaView,
@@ -14,8 +14,44 @@ import BottomNavigation from "../components/BottomNavigation";
 
 import { useTheme } from "../context/ThemeContext";
 
+import { auth } from "../services/firebase";
+
+import api from "../services/api";
+
+import { formatCurrency } from "../utils/currency";
+
+import { useFocusEffect } from "@react-navigation/native";
+
 export default function SavingsScreen({ navigation }) {
   const { colors, getFontSize } = useTheme();
+
+  const [userCurrency, setUserCurrency] = useState("Eswatini");
+
+  useFocusEffect(
+    useCallback(() => {
+      async function loadCurrency() {
+        try {
+          const currentUser = auth.currentUser;
+
+          if (!currentUser) return;
+
+          const token = await currentUser.getIdToken();
+
+          const response = await api.get("/auth/profile", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          setUserCurrency(response.data.user.currency || "Eswatini");
+        } catch (error) {
+          console.log(error.response?.data || error.message);
+        }
+      }
+
+      loadCurrency();
+    }, []),
+  );
 
   return (
     <SafeAreaView
@@ -103,7 +139,7 @@ export default function SavingsScreen({ navigation }) {
                   marginTop: 8,
                 }}
               >
-                E1,100
+                {formatCurrency(1100, userCurrency)}
               </Text>
 
               <View
@@ -123,7 +159,7 @@ export default function SavingsScreen({ navigation }) {
                     fontSize: getFontSize(15),
                   }}
                 >
-                  +E240 saved this month
+                  +{formatCurrency(240, userCurrency)} saved this month
                 </Text>
               </View>
             </View>

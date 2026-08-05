@@ -6,7 +6,7 @@ export default StyleSheet.create({
 
     card: {
 
-        width: 128,
+        width: 148,
 
         borderRadius: 16,
 

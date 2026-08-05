@@ -76,7 +76,7 @@ export default function SearchProductCard({
                         style={[
                             styles.price,
                             {
-                                fontSize: getFontSize(22)
+                                fontSize: getFontSize(19)
                             }
                         ]}
                     >
@@ -88,7 +88,7 @@ export default function SearchProductCard({
                             style={[
                                 styles.saveText,
                                 {
-                                    fontSize: getFontSize(12)
+                                    fontSize: getFontSize(11)
                                 }
                             ]}
                         >

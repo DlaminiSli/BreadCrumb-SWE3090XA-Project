@@ -88,7 +88,7 @@ export default StyleSheet.create({
 
     price: {
 
-        fontSize: 18,
+        fontSize: 16,
 
         fontWeight: "800",
 
@@ -112,7 +112,7 @@ export default StyleSheet.create({
 
     saveText: {
 
-        fontSize: 11,
+        fontSize: 10,
 
         fontWeight: "700",
 

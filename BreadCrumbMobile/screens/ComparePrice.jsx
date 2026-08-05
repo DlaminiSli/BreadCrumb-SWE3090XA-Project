@@ -22,6 +22,14 @@ import styles from "../styles/ComparePriceStyles";
 
 import { useTheme } from "../context/ThemeContext";
 
+import { formatCurrency } from "../utils/currency";
+
+import { useFocusEffect } from "@react-navigation/native";
+
+import { useCallback } from "react";
+
+import { auth } from "../services/firebase";
+
 export default function ComparePrice({
   route,
 
@@ -41,7 +49,10 @@ export default function ComparePrice({
 
   const [comparison, setComparison] = useState(null);
 
-  useEffect(() => {
+  const [userCurrency, setUserCurrency] = useState("Eswatini");
+
+  useFocusEffect(
+    useCallback(() => {
     async function loadComparison() {
       try {
         console.log("Product selected:", product);
@@ -56,13 +67,30 @@ export default function ComparePrice({
         console.log(JSON.stringify(response.data, null, 2));
 
         setComparison(response.data);
+
+        const currentUser = auth.currentUser;
+
+        if (currentUser) {
+          const token = await currentUser.getIdToken();
+
+          const profileResponse = await api.get("/auth/profile", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          setUserCurrency(profileResponse.data.user.currency || "Eswatini");
+
+          console.log(profileResponse.data.user);
+          console.log(profileResponse.data.user.currency);
+        }
       } catch (error) {
         console.log(error.response?.data || error.message);
       }
     }
 
     loadComparison();
-  }, []);
+  }, []));
 
   const stores = comparison?.stores || [];
 
@@ -189,9 +217,13 @@ export default function ComparePrice({
             {bestDeal?.store}
           </Text>
 
-          <Text style={styles.bestPrice}>E{bestDeal?.price}</Text>
+          <Text style={styles.bestPrice}>
+            {formatCurrency(Number(bestDeal?.price || 0), userCurrency)}
+          </Text>
 
-          <Text style={styles.bestSavings}>Save E{bestDeal?.savings}</Text>
+          <Text style={styles.bestSavings}>
+            Save {formatCurrency(Number(bestDeal?.savings || 0), userCurrency)}
+          </Text>
         </View>
 
         <Text
@@ -244,7 +276,9 @@ export default function ComparePrice({
             </View>
 
             <View style={styles.priceSection}>
-              <Text style={styles.storePrice}>E{item.price}</Text>
+              <Text style={styles.storePrice}>
+                {formatCurrency(Number(item.price), userCurrency)}
+              </Text>
 
               {item.bestDeal && (
                 <View style={styles.bestBadge}>
@@ -315,7 +349,7 @@ export default function ComparePrice({
                   },
                 ]}
               >
-                E{bestDeal?.savings}
+                {formatCurrency(Number(bestDeal?.savings || 0), userCurrency)}
               </Text>
               . BreadCrumb found the lowest advertised price.
             </Text>
@@ -607,7 +641,8 @@ export default function ComparePrice({
                         marginTop: 6,
                       }}
                     >
-                      Budget: E{item.budget || 0}
+                      Budget:{" "}
+                      {formatCurrency(Number(item.budget || 0), userCurrency)}
                     </Text>
 
                     <Text

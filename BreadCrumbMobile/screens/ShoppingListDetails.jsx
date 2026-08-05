@@ -23,6 +23,14 @@ import ActiveShoppingView from "../components/ActiveShoppingView";
 
 import { useTheme } from "../context/ThemeContext";
 
+import { auth } from "../services/firebase";
+
+import api from "../services/api";
+
+import { formatCurrency } from "../utils/currency";
+
+import { useFocusEffect } from "@react-navigation/native";
+
 export default function ShoppingListDetails({
   route,
 
@@ -52,7 +60,35 @@ export default function ShoppingListDetails({
 
   const [refreshing, setRefreshing] = useState(false);
 
+  const [userCurrency, setUserCurrency] = useState("Eswatini");
+
   const { colors, getFontSize } = useTheme();
+
+  useFocusEffect(
+    useCallback(() => {
+      async function loadCurrency() {
+        try {
+          const currentUser = auth.currentUser;
+
+          if (!currentUser) return;
+
+          const token = await currentUser.getIdToken();
+
+          const response = await api.get("/auth/profile", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          setUserCurrency(response.data.user.currency || "Eswatini");
+        } catch (error) {
+          console.log(error.response?.data || error.message);
+        }
+      }
+
+      loadCurrency();
+    }, []),
+  );
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -132,7 +168,7 @@ export default function ShoppingListDetails({
   const totalItems = list.items.length;
   const budgetSavings = Number(list.budget) - total;
 
-  const isOverBudget = budgetSavings < 0;
+  const isOverBudget = remaining < 0;
 
   const shoppingCompleted = totalItems > 0 && purchasedItems === totalItems;
 
@@ -244,11 +280,11 @@ export default function ShoppingListDetails({
                 styles.summaryValue,
                 {
                   color: colors.text,
-                  fontSize: getFontSize(22),
+                  fontSize: getFontSize(20),
                 },
               ]}
             >
-              E{list.budget}
+              {formatCurrency(Number(list.budget), userCurrency)}
             </Text>
           </View>
 
@@ -277,11 +313,11 @@ export default function ShoppingListDetails({
                 styles.summaryValue,
                 {
                   color: colors.text,
-                  fontSize: getFontSize(22),
+                  fontSize: getFontSize(20),
                 },
               ]}
             >
-              E{total}
+              {formatCurrency(total, userCurrency)}
             </Text>
           </View>
 
@@ -314,7 +350,7 @@ export default function ShoppingListDetails({
                 },
               ]}
             >
-              E{Math.abs(budgetSavings)}
+              {formatCurrency(Math.abs(remaining), userCurrency)}
             </Text>
           </View>
         </View>
@@ -468,7 +504,7 @@ export default function ShoppingListDetails({
                       color: colors.text,
                     }}
                   >
-                    E{total}
+                    {formatCurrency(total, userCurrency)}
                   </Text>
                 </View>
 
@@ -495,7 +531,7 @@ export default function ShoppingListDetails({
                       color: budgetSavings >= 0 ? "#22A45D" : "#D32F2F",
                     }}
                   >
-                    E{Math.abs(budgetSavings)}
+                    {formatCurrency(Math.abs(remaining), userCurrency)}
                   </Text>
                 </View>
 
@@ -703,7 +739,10 @@ export default function ShoppingListDetails({
                       fontWeight: "700",
                     }}
                   >
-                    E{item.price}
+                    {formatCurrency(
+                      Number(item.price) * Number(item.quantity || 1),
+                      userCurrency,
+                    )}
                   </Text>
                 </View>
 
@@ -866,7 +905,7 @@ export default function ShoppingListDetails({
                   },
                 ]}
               >
-                E{Math.abs(budgetSavings)}
+                {formatCurrency(Math.abs(remaining), userCurrency)}
               </Text>
             </View>
           </View>

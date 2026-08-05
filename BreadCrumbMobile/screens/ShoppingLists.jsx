@@ -23,6 +23,16 @@ import styles from "../styles/ShoppingListsStyles";
 
 import { useTheme } from "../context/ThemeContext";
 
+import { auth } from "../services/firebase";
+
+import api from "../services/api";
+
+import { formatCurrency } from "../utils/currency";
+
+import { useFocusEffect } from "@react-navigation/native";
+
+import { useCallback } from "react";
+
 export default function ShoppingLists({ navigation }) {
   const {
     lists,
@@ -52,6 +62,8 @@ export default function ShoppingLists({ navigation }) {
 
   const [category, setCategory] = useState("Groceries");
 
+  const [userCurrency, setUserCurrency] = useState("Eswatini");
+
   const handleCreateList = () => {
     if (!listName.trim()) {
       return;
@@ -64,7 +76,7 @@ export default function ShoppingLists({ navigation }) {
 
       category,
 
-      budget,
+      budget: Number(budget),
 
       shoppingDate: shoppingDate
         ? shoppingDate.toLocaleDateString("en-GB", {
@@ -115,6 +127,32 @@ export default function ShoppingLists({ navigation }) {
   const activeLists = lists.filter((list) => !list.archived);
 
   const archivedLists = lists.filter((list) => list.archived);
+
+  useFocusEffect(
+    useCallback(() => {
+      async function loadCurrency() {
+        try {
+          const currentUser = auth.currentUser;
+
+          if (!currentUser) return;
+
+          const token = await currentUser.getIdToken();
+
+          const response = await api.get("/auth/profile", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          setUserCurrency(response.data.user.currency || "Eswatini");
+        } catch (error) {
+          console.log(error.response?.data || error.message);
+        }
+      }
+
+      loadCurrency();
+    }, []),
+  );
 
   return (
     <SafeAreaView
@@ -253,7 +291,7 @@ export default function ShoppingLists({ navigation }) {
               />
 
               <TextInput
-                placeholder="Budget (E)"
+                placeholder={`Budget (${userCurrency})`}
                 placeholderTextColor={colors.secondary}
                 keyboardType="numeric"
                 style={[
