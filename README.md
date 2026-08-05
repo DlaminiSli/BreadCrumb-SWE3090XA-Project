@@ -71,10 +71,6 @@ Every comparison, catalogue, and price recommendation becomes another "breadcrum
 <p align="center">
   <img src="Screenshots/smartbasket.jpeg" width="220">
   <img src="Screenshots/lists.jpeg" width="220">
-  <img src="Screenshots/savings.jpeg" width="220">
-</p>
-
-<p align="center">
   <img src="Screenshots/profile.jpeg" width="220">
 </p>
 
