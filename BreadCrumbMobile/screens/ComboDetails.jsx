@@ -440,7 +440,11 @@ export default function ComboDetails({
                         marginTop: 6,
                       }}
                     >
-                      Budget: {formatCurrency(item.budget || 0, userCurrency)}
+                      Budget:{" "}
+                      {formatCurrency(
+                        convertCurrency(Number(item.budget || 0), userCurrency),
+                        userCurrency,
+                      )}
                     </Text>
 
                     <Text
