@@ -19,7 +19,7 @@ import { useTheme } from "../context/ThemeContext";
 import { auth } from "../services/firebase";
 import api from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
-import { formatCurrency } from "../utils/currency";
+import { formatCurrency, convertCurrency } from "../utils/currency";
 
 export default function Search({ navigation, route }) {
   const { colors, getFontSize } = useTheme();
@@ -44,7 +44,7 @@ const products = [
     category: "Grocery",
     store: "Shoprite",
     price: "180",
-    save: "27",
+    save: "31",
     image: require("../assets/images/products/portions.png"),
   },
 
@@ -54,7 +54,7 @@ const products = [
     category: "Grocery",
     store: "Shoprite",
     price: "21",
-    save: "2",
+    save: "9",
     image: require("../assets/images/products/simba.png"),
   },
 
@@ -64,7 +64,7 @@ const products = [
     category: "Grocery",
     store: "OK Foods",
     price: "38",
-    save: "5",
+    save: "10",
     image: require("../assets/images/products/milk.png"),
   },
 
@@ -74,7 +74,7 @@ const products = [
     category: "Grocery",
     store: "Shoprite",
     price: "40",
-    save: "6",
+    save: "11",
     image: require("../assets/images/products/oros.png"),
   },
 
@@ -84,7 +84,7 @@ const products = [
     category: "Liquor",
     store: "Spar",
     price: "180",
-    save: "17",
+    save: "34",
     image: require("../assets/images/products/gin.png"),
   },
 
@@ -94,7 +94,7 @@ const products = [
     category: "Grocery",
     store: "Shoprite",
     price: "180",
-    save: "27",
+    save: "36",
     image: require("../assets/images/products/rice.jpg"),
   },
 
@@ -104,7 +104,7 @@ const products = [
     category: "Electronics",
     store: "HiFi Corp",
     price: "7999",
-    save: "449",
+    save: "538",
     image: require("../assets/images/products/a56.jpg"),
   },
 
@@ -114,7 +114,7 @@ const products = [
     category: "Pharmacy",
     store: "Clicks",
     price: "56",
-    save: "10",
+    save: "12",
     image: require("../assets/images/products/panado.png"),
   },
 
@@ -124,7 +124,7 @@ const products = [
     category: "Liquor",
     store: "Tops at SPAR",
     price: "112",
-    save: "18",
+    save: "24",
     image: require("../assets/images/products/blacklabel.jpg"),
   },
 
@@ -134,7 +134,7 @@ const products = [
     category: "Furniture",
     store: "OK Furniture",
     price: "5998",
-    save: "651",
+    save: "1039",
     image: require("../assets/images/products/queenbed.jpg"),
   },
 
@@ -144,7 +144,7 @@ const products = [
     category: "Grocery",
     store: "OK Foods",
     price: "18",
-    save: "4",
+    save: "7",
     image: require("../assets/images/products/blueribbon.png"),
   },
 
@@ -154,7 +154,7 @@ const products = [
     category: "Electronics",
     store: "Hifi Corp",
     price: "7998",
-    save: "451",
+    save: "1538",
     image: require("../assets/images/products/hisense55.jpg"),
   },
 
@@ -164,7 +164,7 @@ const products = [
     category: "Pharmacy",
     store: "Woolworths",
     price: "95",
-    save: "14",
+    save: "21",
     image: require("../assets/images/products/nivealotion.jpg"),
   },
 
@@ -174,7 +174,7 @@ const products = [
     category: "Liquor",
     store: "Tops at Spar",
     price: "135",
-    save: "18",
+    save: "25",
     image: require("../assets/images/products/savanna.jpg"),
   },
 
@@ -184,7 +184,7 @@ const products = [
     category: "Furniture",
     store: "OK Furniture",
     price: "2500",
-    save: "374",
+    save: "365",
     image: require("../assets/images/products/desk.jpg"),
   },
 
@@ -194,7 +194,7 @@ const products = [
     category: "Grocery",
     store: "OK Foods",
     price: "17",
-    save: "4",
+    save: "6",
     image: require("../assets/images/products/clovermilk.png"),
   },
 
@@ -204,7 +204,7 @@ const products = [
     category: "Electronics",
     store: "HiFi Corp",
     price: "21998",
-    save: "451",
+    save: "2523",
     image: require("../assets/images/products/iphone16.png"),
   },
 
@@ -214,18 +214,18 @@ const products = [
     category: "Pharmacy",
     store: "Woolworths",
     price: "75",
-    save: "12",
+    save: "19",
     image: require("../assets/images/products/always.png"),
   },
 
   {
     id: 19,
-    name: "Gordon's London Dry Gin 750ml",
+    name: "Tanqueray London Dry Gin 750ml",
     category: "Liquor",
     store: "Spar",
-    price: "180",
-    save: "17",
-    image: require("../assets/images/products/gin.png"),
+    price: "249",
+    save: "26",
+    image: require("../assets/images/products/tanqueray.png"),
   },
 
   {
@@ -234,7 +234,7 @@ const products = [
     category: "Furniture",
     store: "OK Furniture",
     price: "7998",
-    save: "651",
+    save: "516",
     image: require("../assets/images/products/tvstand.jpg"),
   },
 
@@ -244,7 +244,7 @@ const products = [
     category: "Grocery",
     store: "OK Foods",
     price: "60",
-    save: "9",
+    save: "14",
     image: require("../assets/images/products/eggs.jpg"),
   },
 
@@ -254,7 +254,7 @@ const products = [
     category: "Electronics",
     store: "HiFi Corp",
     price: "2298",
-    save: "346",
+    save: "277",
     image: require("../assets/images/products/jbl.png"),
   },
 
@@ -264,7 +264,7 @@ const products = [
     category: "Pharmacy",
     store: "Clicks",
     price: "100",
-    save: "15",
+    save: "21",
     image: require("../assets/images/products/centrum.jpg"),
   },
 
@@ -274,7 +274,7 @@ const products = [
     category: "Liquor",
     store: "Tops at SPAR",
     price: "140",
-    save: "17",
+    save: "29",
     image: require("../assets/images/products/heineken.jpg"),
   },
 
@@ -284,7 +284,7 @@ const products = [
     category: "Furniture",
     store: "Bears",
     price: "6999",
-    save: "650",
+    save: "350",
     image: require("../assets/images/products/sofa.jpg"),
   },
 
@@ -294,7 +294,7 @@ const products = [
     category: "Electronics",
     store: "HiFi Corp",
     price: "5299",
-    save: "450",
+    save: "320",
     image: require("../assets/images/products/tecno.jpg"),
   },
 
@@ -304,7 +304,7 @@ const products = [
     category: "Liquor",
     store: "Tops at SPAR",
     price: "116",
-    save: "16",
+    save: "20",
     image: require("../assets/images/products/castlelite.jpg"),
   },
 
@@ -314,7 +314,7 @@ const products = [
     category: "Pharmacy",
     store: "Woolworths",
     price: "35",
-    save: "5",
+    save: "10",
     image: require("../assets/images/products/colgate.png"),
   },
 
@@ -324,7 +324,7 @@ const products = [
     category: "Grocery",
     store: "Shoprite",
     price: "81",
-    save: "11",
+    save: "16",
     image: require("../assets/images/products/oil.jpg"),
   },
 
@@ -334,7 +334,7 @@ const products = [
     category: "Furniture",
     store: "OK Furniture",
     price: "4000",
-    save: "599",
+    save: "402",
     image: require("../assets/images/products/wardrobe.jpg"),
   },
 
@@ -344,7 +344,7 @@ const products = [
     category: "Electronics",
     store: "HiFi Corp",
     price: "4798",
-    save: "450",
+    save: "248",
     image: require("../assets/images/products/redmi.png"),
   },
 
@@ -354,7 +354,7 @@ const products = [
     category: "Liquor",
     store: "Tops at Spar",
     price: "121",
-    save: "17",
+    save: "25",
     image: require("../assets/images/products/flyingfish.jpg"),
   },
 
@@ -364,7 +364,7 @@ const products = [
     category: "Pharmacy",
     store: "Clicks",
     price: "190",
-    save: "17",
+    save: "22",
     image: require("../assets/images/products/biooil.png"),
   },
 
@@ -374,7 +374,7 @@ const products = [
     category: "Grocery",
     store: "Shoprite",
     price: "35",
-    save: "5",
+    save: "9",
     image: require("../assets/images/products/doritos.jpg"),
   },
 
@@ -384,7 +384,7 @@ const products = [
     category: "Furniture",
     store: "OK Furniture",
     price: "999",
-    save: "166",
+    save: "100",
     image: require("../assets/images/products/coffeetable.jpg"),
   },
 
@@ -394,7 +394,7 @@ const products = [
     category: "Electronics",
     store: "HiFi Corp",
     price: "13999",
-    save: "450",
+    save: "1648",
     image: require("../assets/images/products/hplaptop.png"),
   },
 
@@ -404,7 +404,7 @@ const products = [
     category: "Liquor",
     store: "Tops at SPAR",
     price: "450",
-    save: "17",
+    save: "83",
     image: require("../assets/images/products/jameson.jpg"),
   },
 
@@ -414,7 +414,7 @@ const products = [
     category: "Pharmacy",
     store: "Shoprite",
     price: "69",
-    save: "10",
+    save: "19",
     image: require("../assets/images/products/sensodyne.jpg"),
   },
 
@@ -424,7 +424,7 @@ const products = [
     category: "Grocery",
     store: "Pic n Pay",
     price: "24",
-    save: "2",
+    save: "8",
     image: require("../assets/images/products/coke.png"),
   },
 
@@ -434,7 +434,7 @@ const products = [
     category: "Furniture",
     store: "OK Furniture",
     price: "4499",
-    save: "651",
+    save: "399",
     image: require("../assets/images/products/diningtable.jpg"),
   },
 
@@ -444,7 +444,7 @@ const products = [
     category: "Liquor",
     store: "Tops at Spar",
     price: "750",
-    save: "19",
+    save: "140",
     image: require("../assets/images/products/hennessy.jpg"),
   },
 
@@ -454,7 +454,7 @@ const products = [
     category: "Liquor",
     store: "Tops at SPAR",
     price: "750",
-    save: "17",
+    save: "143",
     image: require("../assets/images/products/hennessy-vsop.png"),
   },
 
@@ -464,7 +464,7 @@ const products = [
     category: "Liquor",
     store: "Tops at Spar",
     price: "125",
-    save: "19",
+    save: "24",
     image: require("../assets/images/products/brutalfruit.jpg"),
   },
 
@@ -474,7 +474,7 @@ const products = [
     category: "Liquor",
     store: "Pick n Pay Liquor",
     price: "125",
-    save: "12",
+    save: "13",
     image: require("../assets/images/products/brutalfruit-original.jpg"),
   },
 
@@ -484,7 +484,7 @@ const products = [
     category: "Grocery",
     store: "Shoprite",
     price: "75",
-    save: "11",
+    save: "12",
     image: require("../assets/images/products/cornflakes.jpg"),
   },
 
@@ -494,7 +494,7 @@ const products = [
     category: "Grocery",
     store: "Shoprite",
     price: "70",
-    save: "9",
+    save: "15",
     image: require("../assets/images/products/cocopops.png"),
   },
 
@@ -504,7 +504,7 @@ const products = [
     category: "Grocery",
     store: "Shoprite",
     price: "69",
-    save: "11",
+    save: "18",
     image: require("../assets/images/products/jungleoats.png"),
   },
 
@@ -514,7 +514,7 @@ const products = [
     category: "Grocery",
     store: "Shoprite",
     price: "65",
-    save: "10",
+    save: "15",
     image: require("../assets/images/products/weetbix.jpg"),
   },
 
@@ -522,9 +522,9 @@ const products = [
     id: 49,
     name: "Futurelife Original 500g",
     category: "Grocery",
-    store: "Boxer",
+    store: "Shoprite",
     price: "85",
-    save: "13",
+    save: "20",
     image: require("../assets/images/products/futurelife.jpg"),
   },
 
@@ -534,7 +534,7 @@ const products = [
     category: "Grocery",
     store: "Boxer",
     price: "89",
-    save: "9",
+    save: "10",
     image: require("../assets/images/products/milocereal.jpg"),
   },
 
@@ -544,7 +544,7 @@ const products = [
     category: "Electronics",
     store: "HiFi Corp",
     price: "5998",
-    save: "452",
+    save: "562",
     image: require("../assets/images/products/a36.jpg"),
   },
 
@@ -554,7 +554,7 @@ const products = [
     category: "Electronics",
     store: "HiFi Corp",
     price: "8000",
-    save: "449",
+    save: "1079",
     image: require("../assets/images/products/lg55.jpg"),
   },
 
@@ -564,7 +564,7 @@ const products = [
     category: "Electronics",
     store: "HiFi Corp",
     price: "349",
-    save: "52",
+    save: "41",
     image: require("../assets/images/products/logitechmouse.jpg"),
   },
 
@@ -574,7 +574,7 @@ const products = [
     category: "Electronics",
     store: "HiFi Corp",
     price: "699",
-    save: "105",
+    save: "56",
     image: require("../assets/images/products/hpkeyboard.jpg"),
   },
 
@@ -582,9 +582,9 @@ const products = [
     id: 55,
     name: "Philips Electric Kettle",
     category: "Electronics",
-    store: "Game",
+    store: "Hifi Corp",
     price: "699",
-    save: "105",
+    save: "133",
     image: require("../assets/images/products/kettle.jpg"),
   },
 
@@ -594,7 +594,7 @@ const products = [
     category: "Electronics",
     store: "HiFi Corp",
     price: "1698",
-    save: "256",
+    save: "260",
     image: require("../assets/images/products/airfryer.jpg"),
   },
 
@@ -604,7 +604,7 @@ const products = [
     category: "Grocery",
     store: "Boxer",
     price: "38",
-    save: "5",
+    save: "9",
     image: require("../assets/images/products/sunlight.jpg"),
   },
 
@@ -614,7 +614,7 @@ const products = [
     category: "Grocery",
     store: "Boxer",
     price: "130",
-    save: "19",
+    save: "18",
     image: require("../assets/images/products/omo.png"),
   },
 
@@ -624,7 +624,7 @@ const products = [
     category: "Grocery",
     store: "Pick n Pay",
     price: "92",
-    save: "15",
+    save: "19",
     image: require("../assets/images/products/ricoffy.jpg"),
   },
 
@@ -634,7 +634,7 @@ const products = [
     category: "Grocery",
     store: "Pick n Pay",
     price: "58",
-    save: "8",
+    save: "14",
     image: require("../assets/images/products/fiveroses.jpg"),
   },
 
@@ -644,7 +644,7 @@ const products = [
     category: "Grocery",
     store: "Spar",
     price: "179",
-    save: "28",
+    save: "35",
     image: require("../assets/images/products/steak.jpg"),
   },
 
@@ -654,7 +654,7 @@ const products = [
     category: "Grocery",
     store: "Shoprite",
     price: "120",
-    save: "18",
+    save: "22",
     image: require("../assets/images/products/chicken.jpg"),
   },
 
@@ -664,7 +664,7 @@ const products = [
     category: "Grocery",
     store: "Spar",
     price: "131",
-    save: "18",
+    save: "29",
     image: require("../assets/images/products/boerewors.jpg"),
   },
 
@@ -674,7 +674,7 @@ const products = [
     category: "Grocery",
     store: "Shoprite",
     price: "99",
-    save: "16",
+    save: "22",
     image: require("../assets/images/products/charcoal.jpg"),
   },
 
@@ -684,7 +684,7 @@ const products = [
     category: "Grocery",
     store: "Boxer",
     price: "32",
-    save: "5",
+    save: "19",
     image: require("../assets/images/products/tomatosauce.jpg"),
   },
 
@@ -693,8 +693,8 @@ const products = [
     name: "Power Bank 10000mAh",
     category: "Electronics",
     store: "HiFi Corp",
-    price: "699",
-    save: "100",
+    price: "510",
+    save: "70",
     image: require("../assets/images/products/powerbank.jpg"),
   },
 
@@ -704,7 +704,7 @@ const products = [
     category: "Electronics",
     store: "HiFi Corp",
     price: "99",
-    save: "16",
+    save: "15",
     image: require("../assets/images/products/usb64gb.jpg"),
   },
 
@@ -724,7 +724,7 @@ const products = [
     category: "Pharmacy",
     store: "Clicks",
     price: "299",
-    save: "50",
+    save: "40",
     image: require("../assets/images/products/firstaidkit.jpg"),
   },
 
@@ -734,7 +734,7 @@ const products = [
     category: "Pharmacy",
     store: "Clicks",
     price: "35",
-    save: "10",
+    save: "7",
     image: require("../assets/images/products/bandages.jpg"),
   },
 
@@ -744,7 +744,7 @@ const products = [
     category: "Pharmacy",
     store: "Shoprite",
     price: "100",
-    save: "15",
+    save: "25",
     image: require("../assets/images/products/impulse.jpg"),
   },
 
@@ -754,7 +754,7 @@ const products = [
     category: "Pharmacy",
     store: "Clicks",
     price: "41",
-    save: "5",
+    save: "7",
     image: require("../assets/images/products/disprin.jpg"),
   },
 
@@ -764,7 +764,7 @@ const products = [
     category: "Pharmacy",
     store: "Clicks",
     price: "100",
-    save: "15",
+    save: "18",
     image: require("../assets/images/products/vitaminc.jpg"),
   },
 
@@ -774,7 +774,7 @@ const products = [
     category: "Furniture",
     store: "OK Furniture",
     price: "1499",
-    save: "225",
+    save: "285",
     image: require("../assets/images/products/gamingchair.jpg"),
   },
 
@@ -784,7 +784,7 @@ const products = [
     category: "Furniture",
     store: "OK Furniture",
     price: "1698",
-    save: "256",
+    save: "313",
     image: require("../assets/images/products/bookshelf.jpg"),
   },
 
@@ -794,7 +794,7 @@ const products = [
     category: "Pharmacy",
     store: "Shoprite",
     price: "45",
-    save: "7",
+    save: "14",
     image: require("../assets/images/products/shield.jpg"),
   },
 
@@ -804,7 +804,7 @@ const products = [
     category: "Pharmacy",
     store: "Shoprite",
     price: "31",
-    save: "3",
+    save: "9",
     image: require("../assets/images/products/oralb.jpg"),
   },
 
@@ -814,7 +814,7 @@ const products = [
     category: "Pharmacy",
     store: "Woolworths",
     price: "25",
-    save: "4",
+    save: "11",
     image: require("../assets/images/products/dove.jpg"),
   },
 
@@ -824,7 +824,7 @@ const products = [
     category: "Pharmacy",
     store: "Woolworths",
     price: "99",
-    save: "16",
+    save: "23",
     image: require("../assets/images/products/panteneshampoo.jpg"),
   },
 
@@ -834,7 +834,7 @@ const products = [
     category: "Pharmacy",
     store: "Woolworths",
     price: "101",
-    save: "14",
+    save: "24",
     image: require("../assets/images/products/panteneconditioner.jpg"),
   },
 
@@ -844,7 +844,7 @@ const products = [
     category: "Grocery",
     store: "Shoprite",
     price: "121",
-    save: "17",
+    save: "29",
     image: require("../assets/images/products/babysoft.jpg"),
   },
 
@@ -854,7 +854,7 @@ const products = [
     category: "Grocery",
     store: "Shoprite",
     price: "49",
-    save: "8",
+    save: "13",
     image: require("../assets/images/products/handyandy.png"),
   },
 
@@ -864,7 +864,7 @@ const products = [
     category: "Grocery",
     store: "Boxer",
     price: "40",
-    save: "6",
+    save: "10",
     image: require("../assets/images/products/domestos.jpg"),
   },
 
@@ -874,7 +874,7 @@ const products = [
     category: "Grocery",
     store: "Shoprite",
     price: "99",
-    save: "16",
+    save: "18",
     image: require("../assets/images/products/refusebags.jpg"),
   },
 
@@ -883,8 +883,8 @@ const products = [
     name: "Scouring Sponge",
     category: "Grocery",
     store: "Shoprite",
-    price: "18",
-    save: "3",
+    price: "15",
+    save: "14",
     image: require("../assets/images/products/sponge.jpg"),
   },
 
@@ -894,7 +894,7 @@ const products = [
     category: "Grocery",
     store: "Boxer",
     price: "34",
-    save: "6",
+    save: "9",
     image: require("../assets/images/products/bleach.jpg"),
   },
 
@@ -904,7 +904,7 @@ const products = [
     category: "Grocery",
     store: "Boxer",
     price: "37",
-    save: "6",
+    save: "9",
     image: require("../assets/images/products/sunlightdishwashing.jpg"),
   },
 
@@ -914,7 +914,7 @@ const products = [
     category: "Liquor",
     store: "TOPS at SPAR",
     price: "221",
-    save: "18",
+    save: "42",
     image: require("../assets/images/products/smirnoff.jpg"),
   },
 
@@ -924,7 +924,7 @@ const products = [
     category: "Grocery",
     store: "Shoprite",
     price: "70",
-    save: "10",
+    save: "16",
     image: require("../assets/images/products/sunsunrice.jpg"),
   },
 
@@ -934,7 +934,7 @@ const products = [
     category: "Grocery",
     store: "Shoprite",
     price: "44",
-    save: "8",
+    save: "12",
     image: require("../assets/images/products/selati.jpg"),
   },
 
@@ -944,7 +944,7 @@ const products = [
     category: "Grocery",
     store: "OK Foods",
     price: "17",
-    save: "4",
+    save: "6",
     image: require("../assets/images/products/clovermilk.png"),
   },
 
@@ -953,8 +953,8 @@ const products = [
     name: "Umcenge Long Life Milk",
     category: "Grocery",
     store: "OK Foods",
-    price: "19",
-    save: "5",
+    price: "38",
+    save: "10",
     image: require("../assets/images/products/milk.jpg"),
   },
 
@@ -964,7 +964,7 @@ const products = [
     category: "Grocery",
     store: "Pick n Pay",
     price: "92",
-    save: "15",
+    save: "19",
     image: require("../assets/images/products/ricoffy.jpg"),
   },
 
@@ -974,7 +974,7 @@ const products = [
     category: "Grocery",
     store: "Pick n Pay",
     price: "54",
-    save: "7",
+    save: "11",
     image: require("../assets/images/products/freshpak.jpg"),
   },
 
@@ -984,7 +984,7 @@ const products = [
     category: "Grocery",
     store: "OK Foods",
     price: "90",
-    save: "12",
+    save: "19",
     image: require("../assets/images/products/eggs.jpg"),
   },
 
@@ -994,7 +994,7 @@ const products = [
     category: "Grocery",
     store: "Shoprite",
     price: "81",
-    save: "11",
+    save: "16",
     image: require("../assets/images/products/sunfoil.jpg"),
   },
 
@@ -1004,7 +1004,7 @@ const products = [
     category: "Bakery & Desserts",
     store: "Woolworths",
     price: "105",
-    save: "19",
+    save: "24",
     image: require("../assets/images/products/pudding.jpg"),
   },
 ];
@@ -1049,7 +1049,7 @@ const products = [
         name: item.name,
         category: "Suggested",
         store: "Multiple Stores",
-        price: `E${item.estimatedPrice}`,
+        price: item.estimatedPrice,
         save: "Suggested Item",
         image: findProductImage(item.name),
       }));
@@ -1069,8 +1069,14 @@ const products = [
       image={item.image}
       product={item.name}
       store={item.store}
-      price={formatCurrency(item.price, userCurrency)}
-      save={`Save ${formatCurrency(item.save, userCurrency)}`}
+      price={formatCurrency(
+        convertCurrency(Number(item.price), userCurrency),
+        userCurrency,
+      )}
+      save={`Save ${formatCurrency(
+        convertCurrency(Number(item.save), userCurrency),
+        userCurrency,
+      )}`}
       onPress={() =>
         navigation.navigate("ComparePrice", {
           product: item,

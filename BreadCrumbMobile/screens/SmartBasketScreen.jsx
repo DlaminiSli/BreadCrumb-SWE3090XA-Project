@@ -13,7 +13,7 @@ import axios from "axios";
 import { useTheme } from "../context/ThemeContext";
 import { auth } from "../services/firebase";
 import api from "../services/api";
-import { formatCurrency } from "../utils/currency";
+import { formatCurrency, convertCurrency } from "../utils/currency";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback } from "react";
 
@@ -54,7 +54,6 @@ export default function SmartBasketScreen({ route, navigation }) {
   );
   const oneStore = comparison?.oneStore;
   const maximumSavings = comparison?.maximumSavings;
-  const recommended = comparison?.recommended;
   const list = lists.find(
     (item) => String(item._id || item.id) === String(listId),
   );
@@ -86,8 +85,6 @@ export default function SmartBasketScreen({ route, navigation }) {
 
   const selectedProducts = products.filter((item) => item.selected);
 
-  const selectedCount = selectedProducts.length;
-
   const loadComparison = async () => {
     try {
       setLoadingComparison(true);
@@ -102,6 +99,7 @@ export default function SmartBasketScreen({ route, navigation }) {
       );
 
       setComparison(response.data);
+      
     } catch (error) {
       console.log(error);
     } finally {
@@ -254,7 +252,10 @@ export default function SmartBasketScreen({ route, navigation }) {
                     color: "#22A45D",
                   }}
                 >
-                  {formatCurrency(Number(list.budget), userCurrency)}
+                  {formatCurrency(
+                    convertCurrency(Number(list.budget || 0), userCurrency),
+                    userCurrency,
+                  )}
                 </Text>
               </View>
             </View>
@@ -321,7 +322,13 @@ export default function SmartBasketScreen({ route, navigation }) {
                       color: "#22A45D",
                     }}
                   >
-                    {formatCurrency(Number(item.estimatedPrice), userCurrency)}
+                    {formatCurrency(
+                      convertCurrency(
+                        Number(item.estimatedPrice || 0),
+                        userCurrency,
+                      ),
+                      userCurrency,
+                    )}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -347,7 +354,10 @@ export default function SmartBasketScreen({ route, navigation }) {
                   color: "#22A45D",
                 }}
               >
-                {formatCurrency(Number(estimatedTotal), userCurrency)}
+                {formatCurrency(
+                  convertCurrency(Number(estimatedTotal || 0), userCurrency),
+                  userCurrency,
+                )}
               </Text>
             </View>
 
@@ -497,7 +507,13 @@ export default function SmartBasketScreen({ route, navigation }) {
                           fontSize: getFontSize(16),
                         }}
                       >
-                        {formatCurrency(Number(item.price), userCurrency)}
+                        {formatCurrency(
+                          convertCurrency(
+                            Number(item.price || 0),
+                            userCurrency,
+                          ),
+                          userCurrency,
+                        )}
                       </Text>
                     </View>
                   ))}
@@ -531,7 +547,10 @@ export default function SmartBasketScreen({ route, navigation }) {
                     }}
                   >
                     {formatCurrency(
-                      Number(maximumSavings?.total ?? 0),
+                      convertCurrency(
+                        Number(maximumSavings?.total ?? 0),
+                        userCurrency,
+                      ),
                       userCurrency,
                     )}
                   </Text>
@@ -558,7 +577,10 @@ export default function SmartBasketScreen({ route, navigation }) {
                     }}
                   >
                     {formatCurrency(
-                      Number(maximumSavings?.budgetRemaining ?? 0),
+                      convertCurrency(
+                        Number(maximumSavings?.budgetRemaining ?? 0),
+                        userCurrency,
+                      ),
                       userCurrency,
                     )}
                   </Text>
@@ -656,7 +678,13 @@ export default function SmartBasketScreen({ route, navigation }) {
                       color: colors.text,
                     }}
                   >
-                    {formatCurrency(Number(oneStore?.total ?? 0), userCurrency)}
+                    {formatCurrency(
+                      convertCurrency(
+                        Number(oneStore?.total ?? 0),
+                        userCurrency,
+                      ),
+                      userCurrency,
+                    )}
                   </Text>
                 </View>
 
@@ -681,7 +709,10 @@ export default function SmartBasketScreen({ route, navigation }) {
                     }}
                   >
                     {formatCurrency(
-                      Number(oneStore?.budgetRemaining ?? 0),
+                      convertCurrency(
+                        Number(oneStore?.budgetRemaining ?? 0),
+                        userCurrency,
+                      ),
                       userCurrency,
                     )}
                   </Text>
@@ -726,7 +757,10 @@ export default function SmartBasketScreen({ route, navigation }) {
                       fontSize: getFontSize(16),
                     }}
                   >
-                    {formatCurrency(Number(store.total), userCurrency)}
+                    {formatCurrency(
+                      convertCurrency(Number(store.total || 0), userCurrency),
+                      userCurrency,
+                    )}
                   </Text>
                 </View>
               ))}
@@ -778,17 +812,26 @@ export default function SmartBasketScreen({ route, navigation }) {
                   ? oneStore.budgetRemaining >=
                     (maximumSavings?.budgetRemaining ?? 0)
                     ? `We recommend the Best One-Store Basket. You'll spend ${formatCurrency(
-                        Number(oneStore.total),
+                        convertCurrency(Number(oneStore.total), userCurrency),
                         userCurrency,
                       )} at ${oneStore.selectedStore} and still have ${formatCurrency(
-                        Number(oneStore.budgetRemaining),
+                        convertCurrency(
+                          Number(oneStore.budgetRemaining),
+                          userCurrency,
+                        ),
                         userCurrency,
                       )} remaining from your budget.`
                     : `We recommend the Maximum Savings strategy. You'll spend ${formatCurrency(
-                        Number(maximumSavings?.total ?? 0),
+                        convertCurrency(
+                          Number(maximumSavings?.total ?? 0),
+                          userCurrency,
+                        ),
                         userCurrency,
                       )} and still have ${formatCurrency(
-                        Number(maximumSavings?.budgetRemaining ?? 0),
+                        convertCurrency(
+                          Number(maximumSavings?.budgetRemaining ?? 0),
+                          userCurrency,
+                        ),
                         userCurrency,
                       )} remaining from your budget.`
                   : `No single supermarket currently stocks every selected product. We recommend the Maximum Savings strategy instead.`}

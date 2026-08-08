@@ -1,4 +1,4 @@
-const currencies = {
+export const currencies = {
   Eswatini: {
     symbol: "E",
     rate: 1,
@@ -45,10 +45,14 @@ const currencies = {
   },
 };
 
+export function convertCurrency(amount, country) {
+  const currency = currencies[country] || currencies.Eswatini;
+
+  return Math.round(Number(amount) * currency.rate);
+}
+
 export function formatCurrency(amount, country) {
   const currency = currencies[country] || currencies.Eswatini;
 
-  const converted = Math.round(amount * currency.rate);
-
-  return `${currency.symbol}${converted}`;
+  return `${currency.symbol}${Math.round(Number(amount)).toLocaleString()}`;
 }

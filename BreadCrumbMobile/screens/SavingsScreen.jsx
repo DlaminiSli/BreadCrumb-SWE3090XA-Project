@@ -18,7 +18,7 @@ import { auth } from "../services/firebase";
 
 import api from "../services/api";
 
-import { formatCurrency } from "../utils/currency";
+import { formatCurrency, convertCurrency } from "../utils/currency";
 
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -139,7 +139,10 @@ export default function SavingsScreen({ navigation }) {
                   marginTop: 8,
                 }}
               >
-                {formatCurrency(1100, userCurrency)}
+                {formatCurrency(
+                  convertCurrency(1100, userCurrency),
+                  userCurrency,
+                )}
               </Text>
 
               <View
@@ -159,7 +162,12 @@ export default function SavingsScreen({ navigation }) {
                     fontSize: getFontSize(15),
                   }}
                 >
-                  +{formatCurrency(240, userCurrency)} saved this month
+                  +
+                  {formatCurrency(
+                    convertCurrency(240, userCurrency),
+                    userCurrency,
+                  )}{" "}
+                  saved this month
                 </Text>
               </View>
             </View>

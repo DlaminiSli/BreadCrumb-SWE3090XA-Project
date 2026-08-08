@@ -24,7 +24,7 @@ import { auth } from "../services/firebase";
 
 import api from "../services/api";
 
-import { formatCurrency } from "../utils/currency";
+import { formatCurrency, convertCurrency } from "../utils/currency";
 
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -179,7 +179,10 @@ export default function ComboDetails({
           </Text>
 
           <Text style={styles.bestPrice}>
-            {formatCurrency(combo.price, userCurrency)}
+            {formatCurrency(
+              convertCurrency(combo.price, userCurrency),
+              userCurrency,
+            )}
           </Text>
 
           <Text
@@ -193,11 +196,19 @@ export default function ComboDetails({
               fontSize: 16,
             }}
           >
-            Regular Price {formatCurrency(combo.oldPrice, userCurrency)}
+            Regular Price{" "}
+            {formatCurrency(
+              convertCurrency(combo.oldPrice, userCurrency),
+              userCurrency,
+            )}
           </Text>
 
           <Text style={styles.bestSavings}>
-            Save {formatCurrency(combo.save, userCurrency)}
+            Save{" "}
+            {formatCurrency(
+              convertCurrency(combo.save, userCurrency),
+              userCurrency,
+            )}
           </Text>
         </View>
 

@@ -1,150 +1,116 @@
 const mongoose = require("mongoose");
 
 const shoppingListSchema = new mongoose.Schema(
-
-{
-
+  {
     user: {
+      type: mongoose.Schema.Types.ObjectId,
 
-        type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
 
-        ref: "User",
-
-        required: true
-
+      required: true,
     },
 
     name: {
+      type: String,
 
-        type: String,
-
-        required: true
-
+      required: true,
     },
 
     category: {
+      type: String,
 
-        type: String,
-
-        default: "Groceries"
+      default: "Groceries",
     },
 
     budget: {
+      type: Number,
 
-        type: Number,
+      default: 0,
+    },
 
-        default: 0
-
+    budgetCurrency: {
+      type: String,
+      default: "Eswatini",
     },
 
     shoppingDate: {
+      type: String,
 
-        type: String,
-
-        default: ""
-
+      default: "",
     },
 
     shareList: {
+      type: Boolean,
 
-        type: Boolean,
-
-        default: false
-
+      default: false,
     },
 
     completed: {
+      type: Boolean,
 
-        type: Boolean,
-
-        default: false
-
+      default: false,
     },
 
     archived: {
+      type: Boolean,
 
-        type: Boolean,
-
-        default: false
-
+      default: false,
     },
 
     archivedDate: {
+      type: String,
 
-        type: String,
-
-        default: ""
-
+      default: "",
     },
 
     completedDate: {
+      type: String,
 
-        type: String,
-
-        default: ""
-
+      default: "",
     },
 
     items: [
+      {
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
 
-        {
+          ref: "Product",
+        },
 
-            product: {
+        name: String,
 
-                type: mongoose.Schema.Types.ObjectId,
+        quantity: {
+          type: Number,
 
-                ref: "Product"
+          default: 1,
+        },
 
-            },
+        price: {
+          type: Number,
 
-            name: String,
+          default: 0,
+        },
 
-            quantity: {
+        savings: {
+          type: Number,
 
-                type: Number,
+          default: 0,
+        },
 
-                default: 1
+        store: String,
 
-            },
+        purchased: {
+          type: Boolean,
 
-            price: {
+          default: false,
+        },
+      },
+    ],
+  },
 
-                type: Number,
-
-                default: 0
-
-            },
-
-            savings: {
-
-                type: Number,
-
-                default: 0
-
-            },
-
-            store: String,
-
-            purchased: {
-
-                type: Boolean,
-
-                default: false
-
-            }
-
-        }
-
-    ]
-
-},
-
-{
-
-    timestamps: true
-
-}
-
+  {
+    timestamps: true,
+  },
 );
 
 module.exports = mongoose.model(

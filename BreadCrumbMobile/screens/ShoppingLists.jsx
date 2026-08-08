@@ -27,7 +27,7 @@ import { auth } from "../services/firebase";
 
 import api from "../services/api";
 
-import { formatCurrency } from "../utils/currency";
+import { formatCurrency, currencies } from "../utils/currency";
 
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -69,6 +69,10 @@ export default function ShoppingLists({ navigation }) {
       return;
     }
 
+    const rate = currencies[userCurrency]?.rate || 1;
+
+    const baseBudget = Number(budget) / rate;
+
     createList({
       id: Date.now(),
 
@@ -76,7 +80,7 @@ export default function ShoppingLists({ navigation }) {
 
       category,
 
-      budget: Number(budget),
+      budget: baseBudget,
 
       shoppingDate: shoppingDate
         ? shoppingDate.toLocaleDateString("en-GB", {

@@ -10,7 +10,7 @@ import styles from "../styles/ShoppingListsStyles";
 
 import { useTheme } from "../context/ThemeContext";
 
-import { formatCurrency } from "../utils/currency";
+import { formatCurrency, convertCurrency } from "../utils/currency";
 
 import { auth } from "../services/firebase";
 
@@ -237,7 +237,10 @@ export default function ShoppingListCard({
                   },
                 ]}
               >
-                {formatCurrency(Number(list.budget || 0), userCurrency)}
+                {formatCurrency(
+                  convertCurrency(Number(list.budget || 0), userCurrency),
+                  userCurrency,
+                )}
               </Text>
             </View>
 
@@ -300,7 +303,10 @@ export default function ShoppingListCard({
               >
                 {archived
                   ? "Completed"
-                  : formatCurrency(remainingBudget, userCurrency)}
+                  : formatCurrency(
+                      convertCurrency(remainingBudget, userCurrency),
+                      userCurrency,
+                    )}
               </Text>
             </View>
           </View>

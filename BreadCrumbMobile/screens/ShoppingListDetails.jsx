@@ -27,7 +27,7 @@ import { auth } from "../services/firebase";
 
 import api from "../services/api";
 
-import { formatCurrency } from "../utils/currency";
+import { formatCurrency, convertCurrency } from "../utils/currency";
 
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -166,7 +166,8 @@ export default function ShoppingListDetails({
     list.items.length === 0 ? 0 : (purchasedItems / list.items.length) * 100;
 
   const totalItems = list.items.length;
-  const budgetSavings = Number(list.budget) - total;
+  
+  const budgetSavings = remaining;
 
   const isOverBudget = remaining < 0;
 
@@ -284,7 +285,10 @@ export default function ShoppingListDetails({
                 },
               ]}
             >
-              {formatCurrency(Number(list.budget), userCurrency)}
+              {formatCurrency(
+                convertCurrency(Number(list.budget || 0), userCurrency),
+                userCurrency,
+              )}
             </Text>
           </View>
 
@@ -317,7 +321,10 @@ export default function ShoppingListDetails({
                 },
               ]}
             >
-              {formatCurrency(total, userCurrency)}
+              {formatCurrency(
+                convertCurrency(total, userCurrency),
+                userCurrency,
+              )}
             </Text>
           </View>
 
@@ -350,7 +357,10 @@ export default function ShoppingListDetails({
                 },
               ]}
             >
-              {formatCurrency(Math.abs(remaining), userCurrency)}
+              {formatCurrency(
+                convertCurrency(Math.abs(remaining), userCurrency),
+                userCurrency,
+              )}
             </Text>
           </View>
         </View>
@@ -504,7 +514,10 @@ export default function ShoppingListDetails({
                       color: colors.text,
                     }}
                   >
-                    {formatCurrency(total, userCurrency)}
+                    {formatCurrency(
+                      convertCurrency(total, userCurrency),
+                      userCurrency,
+                    )}
                   </Text>
                 </View>
 
@@ -531,7 +544,10 @@ export default function ShoppingListDetails({
                       color: budgetSavings >= 0 ? "#22A45D" : "#D32F2F",
                     }}
                   >
-                    {formatCurrency(Math.abs(remaining), userCurrency)}
+                    {formatCurrency(
+                      convertCurrency(Math.abs(remaining), userCurrency),
+                      userCurrency,
+                    )}
                   </Text>
                 </View>
 
@@ -733,14 +749,12 @@ export default function ShoppingListDetails({
                   <Text
                     style={{
                       marginTop: 4,
-
                       color: "#22A45D",
-
                       fontWeight: "700",
                     }}
                   >
                     {formatCurrency(
-                      Number(item.price) * Number(item.quantity || 1),
+                      convertCurrency(Number(item.price || 0), userCurrency),
                       userCurrency,
                     )}
                   </Text>
@@ -905,7 +919,10 @@ export default function ShoppingListDetails({
                   },
                 ]}
               >
-                {formatCurrency(Math.abs(remaining), userCurrency)}
+                {formatCurrency(
+                  convertCurrency(Math.abs(remaining), userCurrency),
+                  userCurrency,
+                )}
               </Text>
             </View>
           </View>

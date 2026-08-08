@@ -22,7 +22,7 @@ import styles from "../styles/ComparePriceStyles";
 
 import { useTheme } from "../context/ThemeContext";
 
-import { formatCurrency } from "../utils/currency";
+import { formatCurrency, convertCurrency } from "../utils/currency";
 
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -80,9 +80,6 @@ export default function ComparePrice({
           });
 
           setUserCurrency(profileResponse.data.user.currency || "Eswatini");
-
-          console.log(profileResponse.data.user);
-          console.log(profileResponse.data.user.currency);
         }
       } catch (error) {
         console.log(error.response?.data || error.message);
@@ -218,11 +215,18 @@ export default function ComparePrice({
           </Text>
 
           <Text style={styles.bestPrice}>
-            {formatCurrency(Number(bestDeal?.price || 0), userCurrency)}
+            {formatCurrency(
+              convertCurrency(Number(bestDeal?.price || 0), userCurrency),
+              userCurrency,
+            )}
           </Text>
 
           <Text style={styles.bestSavings}>
-            Save {formatCurrency(Number(bestDeal?.savings || 0), userCurrency)}
+            Save{" "}
+            {formatCurrency(
+              convertCurrency(Number(bestDeal?.savings || 0), userCurrency),
+              userCurrency,
+            )}
           </Text>
         </View>
 
@@ -277,7 +281,10 @@ export default function ComparePrice({
 
             <View style={styles.priceSection}>
               <Text style={styles.storePrice}>
-                {formatCurrency(Number(item.price), userCurrency)}
+                {formatCurrency(
+                  convertCurrency(Number(item.price), userCurrency),
+                  userCurrency,
+                )}
               </Text>
 
               {item.bestDeal && (
@@ -349,7 +356,10 @@ export default function ComparePrice({
                   },
                 ]}
               >
-                {formatCurrency(Number(bestDeal?.savings || 0), userCurrency)}
+                {formatCurrency(
+                  convertCurrency(Number(bestDeal?.savings || 0), userCurrency),
+                  userCurrency,
+                )}
               </Text>
               . BreadCrumb found the lowest advertised price.
             </Text>
@@ -642,7 +652,10 @@ export default function ComparePrice({
                       }}
                     >
                       Budget:{" "}
-                      {formatCurrency(Number(item.budget || 0), userCurrency)}
+                      {formatCurrency(
+                        convertCurrency(Number(item.budget || 0), userCurrency),
+                        userCurrency,
+                      )}
                     </Text>
 
                     <Text

@@ -23,8 +23,7 @@ import storeImageMap from "../utils/storeImageMap";
 import { auth } from "../services/firebase";
 import { useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "../context/ThemeContext";
-import { formatCurrency } from "../utils/currency";
-
+import { formatCurrency, convertCurrency } from "../utils/currency";
 export default function Dashboard({ navigation }) {
   const [deals, setDeals] = useState([]);
 
@@ -239,9 +238,18 @@ export default function Dashboard({ navigation }) {
               key={deal._id}
               product={deal.title}
               store={deal.store}
-              oldPrice={formatCurrency(deal.oldPrice, userCurrency)}
-              newPrice={formatCurrency(deal.newPrice, userCurrency)}
-              save={formatCurrency(deal.save, userCurrency)}
+              oldPrice={formatCurrency(
+                convertCurrency(deal.oldPrice, userCurrency),
+                userCurrency,
+              )}
+              newPrice={formatCurrency(
+                convertCurrency(deal.newPrice, userCurrency),
+                userCurrency,
+              )}
+              save={formatCurrency(
+                convertCurrency(deal.save, userCurrency),
+                userCurrency,
+              )}
               expiry={deal.expiry}
               image={imageMap[deal.image]}
               onPress={() => {
@@ -353,7 +361,10 @@ export default function Dashboard({ navigation }) {
               variant="topLeft"
               product="Oros Squash 2L"
               store="Shoprite"
-              price={`Now ${formatCurrency(40, userCurrency)}`}
+              price={`Now ${formatCurrency(
+                convertCurrency(40, userCurrency),
+                userCurrency,
+              )}`}
               image={require("../assets/images/products/oros.png")}
               onPress={() =>
                 navigation.navigate("ComparePrice", {
@@ -371,7 +382,10 @@ export default function Dashboard({ navigation }) {
               variant="topRight"
               product="Malva Pudding 450g"
               store="Woolworths"
-              price={`Now ${formatCurrency(105, userCurrency)}`}
+              price={`Now ${formatCurrency(
+                convertCurrency(105, userCurrency),
+                userCurrency,
+              )}`}
               image={require("../assets/images/products/pudding.jpg")}
               onPress={() =>
                 navigation.navigate("ComparePrice", {
@@ -389,7 +403,10 @@ export default function Dashboard({ navigation }) {
               variant="bottomLeft"
               product="Tastic Rice 5kg"
               store="Shoprite"
-              price={`Now ${formatCurrency(180, userCurrency)}`}
+              price={`Now ${formatCurrency(
+                convertCurrency(180, userCurrency),
+                userCurrency,
+              )}`}
               image={require("../assets/images/products/rice.jpg")}
               onPress={() =>
                 navigation.navigate("ComparePrice", {
@@ -407,7 +424,10 @@ export default function Dashboard({ navigation }) {
               variant="bottomRight"
               product="Gordon's London Dry Gin 750ml"
               store="Spar"
-              price={`Now ${formatCurrency(180, userCurrency)}`}
+              price={`Now ${formatCurrency(
+                convertCurrency(180, userCurrency),
+                userCurrency,
+              )}`}
               image={require("../assets/images/products/gin.png")}
               onPress={() =>
                 navigation.navigate("ComparePrice", {

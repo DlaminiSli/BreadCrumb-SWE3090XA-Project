@@ -69,7 +69,7 @@ export default function SearchProductCard({
                         }
                     ]}
                 >
-                    📍 {store}
+                    {store}
                 </Text>
                 <View style={styles.priceRow}>
                     <Text
